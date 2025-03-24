@@ -1,0 +1,6 @@
+SUBSYSTEM=="usb", ATTR{idVendor}=="0fce", MODE="0660", GROUP="adbusers", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTR{idVendor}=="0fce", ATTR{idProduct}=="71e8", SYMLINK+="android_adb"
+SUBSYSTEM=="usb", ATTR{idVendor}=="0fce", ATTR{idProduct}=="71e8", SYMLINK+="android_fastboot"
+SUBSYSTEM=="usb", ATTR{idVendor}=="1bbb", MODE="0660", GROUP="adbusers", TAG+="uaccess"
+SUBSYSTEM=="usb", ATTR{idVendor}=="1bbb", ATTR{idProduct}=="0c01", SYMLINK+="android_adb"
+SUBSYSTEM=="usb", ATTR{idVendor}=="1bbb", ATTR{idProduct}=="0c01", SYMLINK+="android_fastboot"
