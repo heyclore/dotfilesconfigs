@@ -68,3 +68,12 @@ export NVM_DIR="$HOME/.nvm"
 #export LD_LIBRARY_PATH=~/winedoews/usr/lib
 #export BABL_PATH=~/winedoews/usr/lib/babl-0.1
 #export GEGL_PATH=~/winedoews/usr/lib/gegl-0.4/
+
+f() {
+  if [[ -z "$1" ]]; then
+    echo "Usage: find_foo <search_term>"
+    return 1
+  fi
+  clear
+  find . \( -path "./node_modules/*" \) -prune -o -type f -exec grep "$1" {} +
+}
