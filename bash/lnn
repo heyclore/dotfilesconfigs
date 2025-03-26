@@ -1,0 +1,51 @@
+#!/bin/bash
+
+# Target directory
+target_bin_dir="$HOME/apps/bin/"
+target_lib_dir="$HOME/apps/lib/"
+
+# Ensure target directory exists
+#mkdir -p "$target_dir"
+
+# Get the current directory name
+current_dir_name=$(basename "$PWD")
+
+# Check for the --remove argument
+if [[ "$1" == "--remove" ]]; then
+  # Remove symlinks from the target directory
+  #for file in "$target_dir"/*; do
+  for file in *; do
+    if [[ "$file" ]]; then
+      # Check if it's a symlink and remove it
+      if [[ -L "$target_bin_dir/$file" ]]; then
+        #echo "$file"
+        rm "$target_bin_dir/$file"
+        echo "Removed symlink: $file"
+      fi
+      if file "$file" | grep -q 'shared object' || [ -L "$file" ]; then
+        rm "$target_lib_dir/$file"
+        echo "Removed symlink: $file"
+      fi
+    fi
+  done
+  exit 0
+fi
+
+# Loop through all files in the current directory
+for file in *; do
+  # Check if it's a regular file (not a directory)
+  if [[ -f "$file" ]]; then
+    # Check if the symlink name is the same as the current directory name
+    if file "$file" | grep -q 'shared object' || [ -L "$file" ]; then
+      ln -sf "$(pwd)/$file" "$target_lib_dir$file"
+      echo "Created symlink: $target_lib_dir$file -> $(pwd)/$file"
+    elif [[ -x "$file" ]]; then
+      # Create a symlink in the target directory
+      ln -sf "$(pwd)/$file" "$target_bin_dir$file"
+      echo "Created symlink: $target_bin_dir$file -> $(pwd)/$file"
+    else
+      echo "skip $file"
+    fi
+  fi
+done
+
