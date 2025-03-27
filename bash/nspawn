@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# Default settings
+CONTAINER_DIR="/home/noodle/containers/compiler"
+USER_NAME="noodle"
+TEMPE="/tmp/tempe"
+TAHU="/tmp/tahu"
+
+# Ensure overlay directories exist
+mkdir -p "$TEMPE" "$TAHU"
+
+# Array to store --bind paths
+BIND_ARGS=()
+
+# Parse arguments only if provided
+if [[ "$#" -gt 0 ]]; then
+  for ARG in "$@"; do
+    DEST_DIR="$ARG"
+    BIND_ARGS+=("--bind=/home/noodle/$ARG:$HOME/$DEST_DIR")
+  done
+fi
+
+# Build the systemd-nspawn command
+CMD=(
+  sudo systemd-nspawn
+  --directory="$CONTAINER_DIR"
+  --user="$USER_NAME"
+  --machine="$USER_NAME"
+  --bind="$TEMPE:/home"
+  --bind="$TAHU:/var/cache/pacman/pkg"
+  --bind="$TAHU:/var/cache/fontconfig"
+  --bind="$TAHU:/var/cache/man"
+  --bind="$TAHU:/var/log"
+  --bind="$TAHU:/var/cache"
+  --bind="$TAHU:/var/tmp"
+  --tmpfs=/tmp
+)
+
+# Add --bind arguments only if any were provided
+if [[ ${#BIND_ARGS[@]} -gt 0 ]]; then
+  CMD+=("${BIND_ARGS[@]}")
+fi
+
+# Execute the command
+"${CMD[@]}"
+
+sudo rm -r "$TAHU" "$TEMPE"
