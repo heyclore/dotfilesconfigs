@@ -1,0 +1,2 @@
+[Desktop Entry]
+Exec=st vim %f

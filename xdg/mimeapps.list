@@ -1,0 +1,6 @@
+[Default Applications]
+image/png=sxiv.desktop
+image/jpg=sxiv.desktop
+image/jpeg=sxiv.desktop
+video/mp4=ffplay.desktop
+text/plain=vim.desktop
