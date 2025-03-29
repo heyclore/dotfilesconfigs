@@ -5,6 +5,10 @@ CONTAINER_DIR="/home/noodle/containers/compiler"
 USER_NAME="noodle"
 TEMPE="/tmp/tempe"
 TAHU="/tmp/tahu"
+BIN_DIR="/host-bin"
+LIB_DIR="/host-lib"
+HOST_BIN="PATH=:$BIN_DIR"
+HOST_LIB="LD_LIBRARY_PATH=:$LIB_DIR"
 
 # Ensure overlay directories exist
 mkdir -p "$TEMPE" "$TAHU"
@@ -34,7 +38,11 @@ CMD=(
   #--bind="$TAHU:/var/cache/pacman/pkg"
   #--bind="$TAHU:/var/cache/fontconfig"
   #--bind="$TAHU:/var/cache/man"
+  --bind-ro=/bin:"$BIN_DIR"
+  --bind-ro=/lib:"$LIB_DIR"
   --tmpfs=/tmp
+  --setenv="$HOST_BIN"
+  --setenv="$HOST_LIB"
 )
 
 # Add --bind arguments only if any were provided
@@ -45,4 +53,4 @@ fi
 # Execute the command
 "${CMD[@]}"
 
-sudo rm -r "$TAHU" "$TEMPE"
+#sudo rm -r "$TAHU" "$TEMPE"
