@@ -7,8 +7,6 @@ TEMPE="/tmp/tempe"
 TAHU="/tmp/tahu"
 BIN_DIR="/host-bin"
 LIB_DIR="/host-lib"
-HOST_BIN="PATH=:$BIN_DIR"
-HOST_LIB="LD_LIBRARY_PATH=:$LIB_DIR"
 
 # Ensure overlay directories exist
 mkdir -p "$TEMPE" "$TAHU"
@@ -20,7 +18,6 @@ BIND_ARGS=()
 if [[ "$#" -gt 0 ]]; then
   for ARG in "$@"; do
     DEST_DIR="$ARG"
-    #BIND_ARGS+=("--bind=/home/noodle/$ARG:$HOME/$DEST_DIR")
     BIND_ARGS+=("--bind=$ARG:$HOME/$DEST_DIR")
   done
 fi
@@ -30,19 +27,15 @@ CMD=(
   sudo systemd-nspawn
   --directory="$CONTAINER_DIR"
   --user="$USER_NAME"
-  #--machine="$USER_NAME"
   --bind="$TEMPE:/home"
   --bind="$TAHU:/var/log"
   --bind="$TAHU:/var/tmp"
   --bind="$TAHU:/var/cache"
-  #--bind="$TAHU:/var/cache/pacman/pkg"
-  #--bind="$TAHU:/var/cache/fontconfig"
-  #--bind="$TAHU:/var/cache/man"
   --bind-ro=/bin:"$BIN_DIR"
   --bind-ro=/lib:"$LIB_DIR"
   --tmpfs=/tmp
-  --setenv="$HOST_BIN"
-  --setenv="$HOST_LIB"
+  --setenv="PATH=:$BIN_DIR"
+  --setenv="LD_LIBRARY_PATH=:$LIB_DIR"
 )
 
 # Add --bind arguments only if any were provided
@@ -52,5 +45,3 @@ fi
 
 # Execute the command
 "${CMD[@]}"
-
-#sudo rm -r "$TAHU" "$TEMPE"
