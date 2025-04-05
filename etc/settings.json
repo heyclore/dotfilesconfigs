@@ -1,0 +1,18 @@
+{
+  "BACKGROUND_COLOR": "#000000",
+  "IS_MAXIMIZED": false,
+  "IS_MINIMIZED": false,
+  "WINDOW_BOUNDS": {
+    "x": 1,
+    "y": 1,
+    "width": 1678,
+    "height": 1048
+  },
+  "chromiumSwitches": {},
+  "OPEN_ON_STARTUP": false,
+  "SKIP_HOST_UPDATE": true,
+  "MINIMIZE_TO_TRAY": false,
+  "MIN_WIDTH": 0,
+  "MIN_HEIGHT": 0,
+  "enableHardwareAcceleration": false
+}
