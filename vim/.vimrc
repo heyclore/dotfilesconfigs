@@ -61,6 +61,9 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 inoremap jj <ESC>
+inoremap jk <CR>
+nnoremap ZZ :q<CR>
+nnoremap Zz :q!<CR>
 
 " Swap [ with Shift+[ (i.e., {)
 "nnoremap [ {
@@ -193,39 +196,8 @@ let g:csv_delim=','
 let g:csv_default_delim=','
 
 function! Asu()
-  exec 'source /home/noodle/apps/git/dotfilesconfigs/vim/hjkl.vim'
+  exec 'source /home/noodle/apps/git/dotfilesconfigs/vim/copen.vim'
 endfunction
 
 nmap <F3> :call Asu()<CR>
-
-function! JancokMenu()
-  let g:gg = popup_create("", {
-        \ 'line': 'cursor',
-        \ 'col': 'cursor+13',
-        \ 'border': [],
-        \ 'filter': 'JancokFilter'
-        \ })
-endfunction
-nnoremap e :call JancokMenu()<CR>
-let g:resultGetChar = ""
-function! JancokFilter(id, key)
-  if a:key == "e"
-    normal! gg=G''
-    call popup_close(a:id)
-  elseif a:key == "w"
-    exec 'w'
-    call popup_close(a:id)
-  elseif a:key == "q"
-    q
-    call popup_close(a:id)
-  elseif a:key == "j" || a:key == "\<Down>"
-    let g:resultGetChar = input("?_? ")
-    " let g:copen_selected = (g:copen_selected + 1) % len(g:copen_list)
-    "execute 'silent! cc ' . (g:copen_selected + 1)
-  else
-    return 0
-  endif
-  "call popup_move(a:id, {'line': 'cursor+1', 'col': 'cursor+13'})
-  return 1
-endfunction
-
+noremap hl :call JancokMenu()<CR>

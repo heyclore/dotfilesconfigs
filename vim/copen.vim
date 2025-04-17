@@ -84,43 +84,30 @@ endfunction
 
 "===============================================================================
 
+
+"===============================================================================
+
 let g:resultGetChar = ""
 let g:jancokBool = 1
-let g:jancokTitle = ["H:Indent J:Search K:Save L:Quit","H: J:Down K:Up L:L"]
+let g:jancokTitle = [
+      \["Indent Down Up Save", "H Search K L"],
+      \["h j k l", "H Switch K L"]
+      \]
 
 function! JancokMenu()
   let g:gg = popup_create(g:jancokTitle[0], {
-        "\ 'line': 'cursor',
-        "\ 'col': 'cursor+13',
-        \ 'pos': 'center',
         \ 'border': [],
         \ 'filter': 'JancokFilter'
         \ })
 endfunction
 function! JancokFilter(id, key)
   if g:jancokBool
-    if a:key == "h"
-      normal! gg=G''
-    elseif a:key == "j"
-      let x = input("?_? ")
-      if x != ''
-        let g:resultGetChar = x
-      endif
-      return 1
-    elseif a:key == "k"
-      w
-    elseif a:key == "l"
-      q
-    elseif a:key ==# " "
+    if a:key ==# " "
       let g:jancokBool = !g:jancokBool
       call popup_settext(a:id, g:jancokTitle[1])
       return 1
-    endif
-    call popup_close(a:id)
-    return 1
-  else
-    if a:key == "h"
-      return 1
+    elseif a:key == "h"
+      normal! gg=G''zz
     elseif a:key == "j"
       call JumpToScreenFraction(1)
       return 1
@@ -128,10 +115,43 @@ function! JancokFilter(id, key)
       call JumpToScreenFraction(0)
       return 1
     elseif a:key == "l"
+      w
+    elseif a:key == "H"
       return 1
-    elseif a:key ==# " "
+    elseif a:key == "J"
+      let x = input("?_? ")
+      if x != ''
+        let g:resultGetChar = x
+      endif
+    elseif a:key == "K"
+      return 1
+    elseif a:key == "L"
+      return 1
+    endif
+    call popup_close(a:id)
+    return 1
+  else
+    if a:key ==# " "
       let g:jancokBool = !g:jancokBool
       call popup_settext(a:id, g:jancokTitle[0])
+      return 1
+    elseif a:key == "h"
+      return 1
+    elseif a:key == "j"
+      return 1
+    elseif a:key == "k"
+      return 1
+    elseif a:key == "l"
+      return 1
+    elseif a:key == "H"
+      return 1
+    elseif a:key == "J"
+      execute "normal! \<C-w>w"
+      call popup_move(a:id, {'line': 'cursor+1', 'col': 'cursor+13'})
+      return 1
+    elseif a:key == "K"
+      return 1
+    elseif a:key == "L"
       return 1
     endif
     let g:jancokBool = !g:jancokBool
