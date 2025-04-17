@@ -86,11 +86,13 @@ endfunction
 
 let g:resultGetChar = ""
 let g:jancokBool = 1
+let g:jancokTitle = ["H:Indent J:Search K:Save L:Quit","H: J:Down K:Up L:L"]
 
 function! JancokMenu()
-  let g:gg = popup_create("IF", {
-        \ 'line': 'cursor',
-        \ 'col': 'cursor+13',
+  let g:gg = popup_create(g:jancokTitle[0], {
+        "\ 'line': 'cursor',
+        "\ 'col': 'cursor+13',
+        \ 'pos': 'center',
         \ 'border': [],
         \ 'filter': 'JancokFilter'
         \ })
@@ -100,32 +102,40 @@ function! JancokFilter(id, key)
     if a:key == "h"
       normal! gg=G''
     elseif a:key == "j"
+      let x = input("?_? ")
+      if x != ''
+        let g:resultGetChar = x
+      endif
       return 1
     elseif a:key == "k"
-      return 1
+      w
     elseif a:key == "l"
-      exec 'w'
+      q
     elseif a:key ==# " "
       let g:jancokBool = !g:jancokBool
-      call popup_settext(a:id, "else")
+      call popup_settext(a:id, g:jancokTitle[1])
       return 1
     endif
     call popup_close(a:id)
     return 1
   else
-    if a:key == "j"
+    if a:key == "h"
+      return 1
+    elseif a:key == "j"
       call JumpToScreenFraction(1)
       return 1
     elseif a:key == "k"
       call JumpToScreenFraction(0)
       return 1
+    elseif a:key == "l"
+      return 1
     elseif a:key ==# " "
-      call popup_close(a:id)
+      let g:jancokBool = !g:jancokBool
+      call popup_settext(a:id, g:jancokTitle[0])
+      return 1
     endif
     let g:jancokBool = !g:jancokBool
+    call popup_close(a:id)
+    return 1
   endif
-      "let x = input("?_? ")
-      "if x != ''
-      "  let g:resultGetChar = x
-      "endif
 endfunction
