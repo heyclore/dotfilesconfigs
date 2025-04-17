@@ -61,4 +61,71 @@ function! CopenPopupFilter(id, key)
 endfunction
 
 command! -nargs=? C call ShowCopenPopup(<q-args>)
-nnoremap <Space> :call ShowCopenPopup("")<CR>
+
+"===============================================================================
+
+function! JumpToScreenFraction(position)
+  let top = line('w0')
+  let bottom = line('w$')
+  let range = bottom - top
+
+  if a:position ==# 0
+    let target = top + float2nr(range / 4)
+  elseif a:position ==# 1
+    let target = top + float2nr(range * 3 / 4)
+  else
+    echoerr "Invalid position: " . a:position
+    return
+  endif
+
+  call setpos('.', [0, target, 1, 0])
+  normal! zz
+endfunction
+
+"===============================================================================
+
+let g:resultGetChar = ""
+let g:jancokBool = 1
+
+function! JancokMenu()
+  let g:gg = popup_create("IF", {
+        \ 'line': 'cursor',
+        \ 'col': 'cursor+13',
+        \ 'border': [],
+        \ 'filter': 'JancokFilter'
+        \ })
+endfunction
+function! JancokFilter(id, key)
+  if g:jancokBool
+    if a:key == "h"
+      normal! gg=G''
+    elseif a:key == "j"
+      return 1
+    elseif a:key == "k"
+      return 1
+    elseif a:key == "l"
+      exec 'w'
+    elseif a:key ==# " "
+      let g:jancokBool = !g:jancokBool
+      call popup_settext(a:id, "else")
+      return 1
+    endif
+    call popup_close(a:id)
+    return 1
+  else
+    if a:key == "j"
+      call JumpToScreenFraction(1)
+      return 1
+    elseif a:key == "k"
+      call JumpToScreenFraction(0)
+      return 1
+    elseif a:key ==# " "
+      call popup_close(a:id)
+    endif
+    let g:jancokBool = !g:jancokBool
+  endif
+      "let x = input("?_? ")
+      "if x != ''
+      "  let g:resultGetChar = x
+      "endif
+endfunction

@@ -24,11 +24,6 @@ endfunction
 
 
 
-
-let x = ListDynamicRanges()[1]
-
-
-"execute '2match Comment /^\%>' . (x[0]-1) . 'l\%<' . (x[1]+1) . 'l.\+$/'
 function! SelectWithKeys()
   "let options = ['Option 1', 'Option 2', 'Option 3']
   let options = ListDynamicRanges()
@@ -73,4 +68,24 @@ function! Foo()
   let more = filter(copy(matches), {i, v -> v[0] >= current_line})
   echo less current_line more
 endfunction
-let x= Foo()
+
+function! JumpToScreenFraction(position)
+  let top = line('w0')
+  let bottom = line('w$')
+  let range = bottom - top
+
+  if a:position ==# 0
+    let target = top + float2nr(range / 4)
+  elseif a:position ==# 1
+    let target = top + float2nr(range * 3 / 4)
+  else
+    echoerr "Invalid position: " . a:position
+    return
+  endif
+
+  call setpos('.', [0, target, 1, 0])
+  normal! zz
+endfunction
+
+nnoremap K :call JumpToScreenFraction(0)<CR>
+nnoremap J :call JumpToScreenFraction(1)<CR>
