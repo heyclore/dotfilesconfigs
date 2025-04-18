@@ -84,13 +84,73 @@ endfunction
 
 "===============================================================================
 
+function! Foo()
+  let current_line = getpos('.')[1]
+  let g:matches = []
+  for lnum in range(line('w0'), line('w$'))
+    let line_text = getline(lnum)
+    let start_col = 0
+    while 1
+      let col = match(line_text, g:resultGetChar, start_col)
+      if col == -1
+        break
+      endif
+      call add(g:matches, [lnum, col + 1])
+      let start_col = col + 1
+    endwhile
+  endfor
+  "let less = filter(copy(matches), {i, v -> v[0] < current_line})
+  "let more = filter(copy(matches), {i, v -> v[0] >= current_line})
+  "echo less current_line more
+  "echo matches getpos('.')
+  let g:bar = popup_create("baz", {
+        \ 'border': [],
+        \ 'filter': 'BarFilter'
+        \ })
+endfunction
+function! BarFilter(id, key)
+  let curline = line('.')
+  let target = []
+  if a:key ==# " "
+    echo 123
+  elseif a:key == "h"
+    normal! b
+    return 1
+  elseif a:key == "j"
+    for loc in g:matches
+      if loc[0] > curline
+        let target = loc
+        break
+      endif
+    endfor
+  elseif a:key == "k"
+    for loc in reverse(copy(g:matches))
+      if loc[0] < curline
+        let target = loc
+        break
+      endif
+    endfor
+  elseif a:key == "l"
+    let current_word = expand("<cword>")
+    let start_pos = searchpos(current_word, 'n')
+    let end_pos = [start_pos[0], start_pos[1] + strlen(current_word) - 1]
+    echo start_pos end_pos
+    return 1
+  else
+    call popup_close(a:id)
+  endif
+  if !empty(target)
+    call setpos('.', [0, target[0], target[1], 0])
+  endif
+  return 1
+endfunction
 
 "===============================================================================
 
 let g:resultGetChar = ""
 let g:jancokBool = 1
 let g:jancokTitle = [
-      \["Indent Down Up Save", "H Search K L"],
+      \["Search Down Up Save", "H Indent K L"],
       \["h j k l", "H Switch K L"]
       \]
 
@@ -107,7 +167,12 @@ function! JancokFilter(id, key)
       call popup_settext(a:id, g:jancokTitle[1])
       return 1
     elseif a:key == "h"
-      normal! gg=G''zz
+      let x = input("?_? ")
+      if x != ''
+        let g:resultGetChar = x
+        call popup_close(a:id)
+        call Foo()
+      endif
     elseif a:key == "j"
       call JumpToScreenFraction(1)
       return 1
@@ -119,10 +184,7 @@ function! JancokFilter(id, key)
     elseif a:key == "H"
       return 1
     elseif a:key == "J"
-      let x = input("?_? ")
-      if x != ''
-        let g:resultGetChar = x
-      endif
+      normal! gg=G''zz
     elseif a:key == "K"
       return 1
     elseif a:key == "L"
