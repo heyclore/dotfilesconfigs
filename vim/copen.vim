@@ -1,3 +1,41 @@
+function! SetLangInfo() abort
+  if exists('g:lang_info')
+    return
+  endif
+  let g:lang_info = {
+        \ 'filetype': '',
+        \ 'keywords': [],
+        \ 'symbols': []
+        \ }
+  if &filetype ==# 'javascript' || &filetype ==# 'typescript'
+    let g:lang_info.filetype = 'javascript'
+    let g:lang_info.keywords = ['if', 'else', 'for', 'while', 'function',
+          \'const', 'let', 'var', 'return', 'switch', 'case', 'break', 'try',
+          \'catch', 'finally', 'typeof', 'new', 'class', 'interface',
+          \'extends', 'implements']
+  elseif &filetype ==# 'python'
+    let g:lang_info.filetype = 'python'
+    let g:lang_info.keywords = ['if', 'else', 'elif', 'for', 'while', 'def',
+          \'class', 'import', 'from', 'return', 'try', 'except', 'finally',
+          \'with', 'as', 'pass', 'break', 'continue', 'lambda', 'global',
+          \'nonlocal']
+  elseif &filetype ==# 'c'
+    let g:lang_info.filetype = 'c'
+    let g:lang_info.keywords = ['if', 'else', 'for', 'while', 'do', 'switch',
+          \'case', 'break', 'continue', 'return', 'int', 'float', 'char',
+          \'double', 'void', 'struct', 'union', 'typedef', 'enum', 'const',
+          \'static', 'extern']
+  else
+    let g:lang_info.filetype = 'unsupported'
+    let g:lang_info.keywords = []
+  endif
+  let g:lang_info.symbols = ['+', '-', '*', '/', '=', '==', '!=', '<', '>',
+        \'<=', '>=', '++', '--', '->', '.', ',', ';', '@', '&&', '||',
+        \'===', '!==', '?', ':', '&', '|', '^', '~', '%', '!']
+endfunction
+
+"===============================================================================
+
 let g:copen_list = []
 let g:copen_selected = 0
 
@@ -7,7 +45,6 @@ function! UpdateSelected()
     let num_str = matchstr(line, '\v:\zs\d+(|)')
     call add(numbers, str2nr(num_str))
   endfor
-
   for i in range(len(numbers))
     if g:current_line[1] <= numbers[i]
       let g:copen_selected = i - 1
@@ -25,7 +62,8 @@ function! ShowCopenPopup(arg)
     endif
   else
     execute 'silent! vimgrep /' . a:arg . '/ %'
-    let g:copen_list = map(getqflist(), 'bufname(v:val.bufnr) . ":" . v:val.lnum . "|" . v:val.text')
+    let g:copen_list = map(getqflist(), 'bufname(v:val.bufnr) .
+          \":" . v:val.lnum . "|" . v:val.text')
     if empty(g:copen_list)
       echo "?_?"
       return 1
@@ -47,15 +85,18 @@ function! CopenPopupFilter(id, key)
   if a:key == "\<Esc>" || a:key == "\<CR>" || a:key == "l"
     call popup_close(a:id)
   elseif a:key == "k" || a:key == "\<Up>"
-    let g:copen_selected = (g:copen_selected - 1 + len(g:copen_list)) % len(g:copen_list)
+    let g:copen_selected = (g:copen_selected - 1 +
+          \len(g:copen_list)) % len(g:copen_list)
     execute 'silent! cc ' . (g:copen_selected + 1)
   elseif a:key == "j" || a:key == "\<Down>"
-    let g:copen_selected = (g:copen_selected + 1) % len(g:copen_list)
+    let g:copen_selected = (g:copen_selected + 1) %
+          \len(g:copen_list)
     execute 'silent! cc ' . (g:copen_selected + 1)
   else
     return 0
   endif
-  call popup_settext(g:copen_popup_id, 1 + g:copen_selected . "/" . len(g:copen_list))
+  call popup_settext(g:copen_popup_id, 1 + g:copen_selected . "/" .
+        \len(g:copen_list))
   call popup_move(a:id, {'line': 'cursor+1', 'col': 'cursor+13'})
   return 1
 endfunction
@@ -68,7 +109,6 @@ function! JumpToScreenFraction(position)
   let top = line('w0')
   let bottom = line('w$')
   let range = bottom - top
-
   if a:position ==# 0
     let target = top + float2nr(range / 4)
   elseif a:position ==# 1
@@ -77,14 +117,13 @@ function! JumpToScreenFraction(position)
     echoerr "Invalid position: " . a:position
     return
   endif
-
   call setpos('.', [0, target, 1, 0])
   normal! zz
 endfunction
 
 "===============================================================================
 
-function! Foo()
+function! SearchOnCurrentScreen()
   let current_line = getpos('.')[1]
   let g:matches = []
   for lnum in range(line('w0'), line('w$'))
@@ -108,13 +147,13 @@ function! Foo()
         \ 'filter': 'BarFilter'
         \ })
 endfunction
+
 function! BarFilter(id, key)
   let curline = line('.')
   let target = []
   if a:key ==# " "
-    echo 123
+    return 1
   elseif a:key == "h"
-    normal! b
     return 1
   elseif a:key == "j"
     for loc in g:matches
@@ -131,11 +170,8 @@ function! BarFilter(id, key)
       endif
     endfor
   elseif a:key == "l"
-    let current_word = expand("<cword>")
-    let start_pos = searchpos(current_word, 'n')
-    let end_pos = [start_pos[0], start_pos[1] + strlen(current_word) - 1]
-    echo start_pos end_pos
-    return 1
+    call popup_close(a:id)
+    call ShowCopenPopup(g:resultGetChar)
   else
     call popup_close(a:id)
   endif
@@ -149,6 +185,7 @@ endfunction
 
 let g:resultGetChar = ""
 let g:jancokBool = 1
+
 let g:jancokTitle = [
       \["Search Down Up Save", "H Indent K L"],
       \["h j k l", "H Switch K L"]
@@ -160,6 +197,7 @@ function! JancokMenu()
         \ 'filter': 'JancokFilter'
         \ })
 endfunction
+
 function! JancokFilter(id, key)
   if g:jancokBool
     if a:key ==# " "
@@ -171,7 +209,7 @@ function! JancokFilter(id, key)
       if x != ''
         let g:resultGetChar = x
         call popup_close(a:id)
-        call Foo()
+        call SearchOnCurrentScreen()
       endif
     elseif a:key == "j"
       call JumpToScreenFraction(1)
