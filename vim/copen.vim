@@ -122,11 +122,16 @@ function! JumpToScreenFraction(position)
 endfunction
 
 "===============================================================================
+"foo foo bar foo
 
 function! SearchOnCurrentScreen()
+  if g:resultGetChar == ""
+    return 1
+  endif
   let current_line = getpos('.')[1]
   let g:matches = []
   for lnum in range(line('w0'), line('w$'))
+    "for lnum in range(125, 125)
     let line_text = getline(lnum)
     let start_col = 0
     while 1
@@ -138,10 +143,6 @@ function! SearchOnCurrentScreen()
       let start_col = col + 1
     endwhile
   endfor
-  "let less = filter(copy(matches), {i, v -> v[0] < current_line})
-  "let more = filter(copy(matches), {i, v -> v[0] >= current_line})
-  "echo less current_line more
-  "echo matches getpos('.')
   let g:bar = popup_create(g:resultGetChar, {
         \ 'border': [],
         \ 'filter': 'BarFilter'
@@ -158,14 +159,14 @@ function! BarFilter(id, key)
     call ShowCopenPopup(g:resultGetChar)
   elseif a:key == "j"
     for loc in g:matches
-      if loc[0] > curline
+      if loc[0] > curline || (loc[0] == curline && loc[1] > col('.'))
         let target = loc
         break
       endif
     endfor
   elseif a:key == "k"
     for loc in reverse(copy(g:matches))
-      if loc[0] < curline
+      if loc[0] < curline || (loc[0] == curline && loc[1] < col('.'))
         let target = loc
         break
       endif
@@ -187,6 +188,7 @@ endfunction
 
 let g:resultGetChar = ""
 let g:jancokBool = 0
+let g:jancokNum = 0
 function! CycleJancok()
   let current_val = get(g:, 'jancokBool', 0)
   let idx = (current_val + 1) % len(g:jancokTitle)
@@ -194,8 +196,8 @@ function! CycleJancok()
 endfunction
 
 let g:jancokTitle = [
-      \["?? j? k? l", "H J  K  L"],
-      \["gg } { G", "H Switch K L"]
+      \["?? j? k? ?"],
+      \["gg } { G"]
       \]
 
 function! JancokMenu()
@@ -234,12 +236,22 @@ function! Filter1(id, key)
     endif
     call popup_close(a:id)
   elseif a:key == "j"
+    if g:jancokNum
+      call JancokJump(a:id, 1)
+      return 1
+    endif
     call JumpToScreenFraction(1)
   elseif a:key == "k"
+    if g:jancokNum
+      call JancokJump(a:id, 0)
+      return 1
+    endif
     call JumpToScreenFraction(0)
   elseif a:key == "l"
-  else
     call popup_close(a:id)
+    call SearchOnCurrentScreen()
+  else
+    call FilterElse(a:id, a:key)
   endif
   return 1
 endfunction
@@ -262,8 +274,32 @@ function! Filter2(id, key)
     normal! G
     return 1
   else
-    call popup_close(a:id)
+    call FilterElse(a:id, a:key)
   endif
   call CycleJancok()
   return 1
+endfunction
+
+function! FilterElse(id, key)
+  if a:key =~# '^[0-9]$'
+    let g:jancokNum = g:jancokNum * 10 + str2nr(a:key)
+    if g:jancokNum > 71
+      let g:jancokNum = str2nr(a:key)
+    endif
+    echo g:jancokNum
+    return 1
+  endif
+  call popup_close(a:id)
+endfunction
+
+function! JancokJump(id, nav)
+  let current_line = getpos('.')[1]
+  if a:nav
+    call setpos('.', [0, current_line + g:jancokNum, 0, 0])
+  else
+    call setpos('.', [0, current_line - g:jancokNum, 0, 0])
+  endif
+  normal! zz
+  let g:jancokNum = 0
+  call popup_close(a:id)
 endfunction
