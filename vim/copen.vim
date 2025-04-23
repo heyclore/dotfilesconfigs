@@ -1,39 +1,3 @@
-function! SetLangInfo() abort
-  if exists('g:lang_info')
-    return
-  endif
-  let g:lang_info = {
-        \ 'filetype': '',
-        \ 'keywords': [],
-        \ 'symbols': []
-        \ }
-  if &filetype ==# 'javascript' || &filetype ==# 'typescript'
-    let g:lang_info.filetype = 'javascript'
-    let g:lang_info.keywords = ['if', 'else', 'for', 'while', 'function',
-          \'const', 'let', 'var', 'return', 'switch', 'case', 'break', 'try',
-          \'catch', 'finally', 'typeof', 'new', 'class', 'interface',
-          \'extends', 'implements']
-  elseif &filetype ==# 'python'
-    let g:lang_info.filetype = 'python'
-    let g:lang_info.keywords = ['if', 'else', 'elif', 'for', 'while', 'def',
-          \'class', 'import', 'from', 'return', 'try', 'except', 'finally',
-          \'with', 'as', 'pass', 'break', 'continue', 'lambda', 'global',
-          \'nonlocal']
-  elseif &filetype ==# 'c'
-    let g:lang_info.filetype = 'c'
-    let g:lang_info.keywords = ['if', 'else', 'for', 'while', 'do', 'switch',
-          \'case', 'break', 'continue', 'return', 'int', 'float', 'char',
-          \'double', 'void', 'struct', 'union', 'typedef', 'enum', 'const',
-          \'static', 'extern']
-  else
-    let g:lang_info.filetype = 'unsupported'
-    let g:lang_info.keywords = []
-  endif
-  let g:lang_info.symbols = ['+', '-', '*', '/', '=', '==', '!=', '<', '>',
-        \'<=', '>=', '++', '--', '->', '.', ',', ';', '@', '&&', '||',
-        \'===', '!==', '?', ':', '&', '|', '^', '~', '%', '!']
-endfunction
-
 "===============================================================================
 
 let g:copen_list = []
@@ -173,7 +137,7 @@ function! BarFilter(id, key)
     endfor
   elseif a:key == "l"
   else
-    call popup_close(a:id)
+    "call popup_close(a:id)
   endif
   if !empty(target)
     call setpos('.', [0, target[0], target[1], 0])
@@ -299,7 +263,8 @@ function! JancokJump(id, nav)
   else
     call setpos('.', [0, current_line - g:jancokNum, 0, 0])
   endif
-  normal! zz
   let g:jancokNum = 0
   call popup_close(a:id)
 endfunction
+
+"===============================================================================

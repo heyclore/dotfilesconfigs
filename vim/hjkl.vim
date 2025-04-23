@@ -89,3 +89,117 @@ endfunction
 
 nnoremap K :call JumpToScreenFraction(0)<CR>
 nnoremap J :call JumpToScreenFraction(1)<CR>
+
+
+
+function! SetLangInfo() abort
+  if exists('g:lang_info')
+    return
+  endif
+  let g:lang_info = {
+        \ 'filetype': '',
+        \ 'keywords': [],
+        \ 'symbols': []
+        \ }
+  if &filetype ==# 'javascript' || &filetype ==# 'typescript'
+    let g:lang_info.filetype = 'javascript'
+    let g:lang_info.keywords = ['if', 'else', 'for', 'while', 'function',
+          \'const', 'let', 'var', 'return', 'switch', 'case', 'break', 'try',
+          \'catch', 'finally', 'typeof', 'new', 'class', 'interface',
+          \'extends', 'implements']
+  elseif &filetype ==# 'python'
+    let g:lang_info.filetype = 'python'
+    let g:lang_info.keywords = ['if', 'else', 'elif', 'for', 'while', 'def',
+          \'class', 'import', 'from', 'return', 'try', 'except', 'finally',
+          \'with', 'as', 'pass', 'break', 'continue', 'lambda', 'global',
+          \'nonlocal']
+  elseif &filetype ==# 'c'
+    let g:lang_info.filetype = 'c'
+    let g:lang_info.keywords = ['if', 'else', 'for', 'while', 'do', 'switch',
+          \'case', 'break', 'continue', 'return', 'int', 'float', 'char',
+          \'double', 'void', 'struct', 'union', 'typedef', 'enum', 'const',
+          \'static', 'extern']
+  else
+    let g:lang_info.filetype = 'unsupported'
+    let g:lang_info.keywords = []
+  endif
+  let g:lang_info.symbols = ['+', '-', '*', '/', '=', '==', '!=', '<', '>',
+        \'<=', '>=', '++', '--', '->', '.', ',', ';', '@', '&&', '||',
+        \'===', '!==', '?', ':', '&', '|', '^', '~', '%', '!']
+endfunction
+
+
+function! LexWithCoords()
+  let current_line = line('.')
+  let line_text = getline(current_line)
+  let result = []
+  let s = line_text
+  let col = 1
+  let pattern = '\v\w+|[[:punct:]]'
+  while len(s) > 0
+    let match = matchstr(s, pattern)
+    if match == ''
+      break
+    endif
+    let idx = match(line_text[col - 1:], '\V' . escape(match, '\'))
+    if idx >= 0
+      let real_col = col + idx
+      let type = 0
+      if match =~ '^\d\+$' || match =~ '^\d*\.\d\+$'
+        let type = 1
+      elseif match =~ '^\w\+$'
+        let type = 2
+      endif
+      call add(result, [current_line, real_col, match, type])
+      let col = real_col + len(match)
+    else
+      break
+    endif
+    "let s = a:str[col - 1:]
+    let s = line_text[col - 1:]
+    let s = substitute(s, '^\s*', '', '')
+    let col = col + strlen(line_text[col - 1:]) - strlen(s)
+  endwhile
+  let g:matches = result
+  let g:bar = popup_create(g:resultGetChar, {
+        \ 'border': [],
+        \ 'filter': 'BarFilter'
+        \ })
+endfunction
+
+
+function! LexWithCoords()
+  let current_line = line('.')
+  let line_text = getline(current_line)
+  let result = []
+  let s = line_text
+  let col = 1
+  let pattern = '\v\w+'  " Match only words
+
+  while len(s) > 0
+    let match = matchstr(s, pattern)
+    if match == ''
+      break
+    endif
+
+    let idx = match(line_text[col - 1:], '\V' . escape(match, '\'))
+    if idx >= 0
+      let real_col = col + idx
+      call add(result, [current_line, real_col, match])
+      let col = real_col + len(match)
+    else
+      break
+    endif
+
+    let s = line_text[col - 1:]
+    let s = substitute(s, '^\s*', '', '')
+    let col = col + strlen(line_text[col - 1:]) - strlen(s)
+  endwhile
+
+  let g:matches = result
+  let g:bar = popup_create(g:resultGetChar, {
+        \ 'border': [],
+        \ 'filter': 'BarFilter'
+        \ })
+endfunction
+
