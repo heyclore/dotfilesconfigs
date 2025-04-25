@@ -160,12 +160,13 @@ function! CycleJancok()
 endfunction
 
 let g:jancokTitle = [
-      \["?? j? k? ?"],
-      \["gg } { G"]
+      \["?? j? k? gg/G"],
+      \["gg=G :w :q :q!"]
       \]
 
 function! JancokMenu()
   :unmap hl
+  :unmap lh
   let g:gg = popup_create(g:jancokTitle[0], {
         \ 'border': [],
         \ 'filter': 'JancokFilter',
@@ -185,6 +186,7 @@ endfunction
 noremap hl :call JancokMenu()<CR>
 function! AsuTenan(id, key)
   noremap hl :call JancokMenu()<CR>
+  noremap lh :call Asu()<CR>
 endfunction
 
 function! Filter1(id, key)
@@ -212,8 +214,11 @@ function! Filter1(id, key)
     endif
     call JumpToScreenFraction(0)
   elseif a:key == "l"
-    call popup_close(a:id)
-    call SearchOnCurrentScreen()
+    if line('.') == 1
+      normal! G
+    else
+      normal! gg
+    endif
   else
     call FilterElse(a:id, a:key)
   endif
@@ -224,23 +229,18 @@ function! Filter2(id, key)
   if a:key ==# " "
     call CycleJancok()
     call popup_settext(a:id, g:jancokTitle[0])
-    return 1
   elseif a:key == "h"
-    normal! gg
-    return 1
+    normal! gg=G''
   elseif a:key == "j"
-    normal! }
-    return 1
+    w
   elseif a:key == "k"
-    normal! {
-    return 1
+    q
   elseif a:key == "l"
-    normal! G
-    return 1
+    q!
   else
     call FilterElse(a:id, a:key)
   endif
-  call CycleJancok()
+  "call CycleJancok()
   return 1
 endfunction
 
@@ -253,6 +253,7 @@ function! FilterElse(id, key)
     echo g:jancokNum
     return 1
   endif
+  let g:jancokBool = 0
   call popup_close(a:id)
 endfunction
 
