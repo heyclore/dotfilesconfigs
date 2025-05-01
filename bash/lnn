@@ -33,19 +33,25 @@ fi
 
 # Loop through all files in the current directory
 for file in *; do
-  # Check if it's a regular file (not a directory)
   if [[ -f "$file" ]]; then
-    # Check if the symlink name is the same as the current directory name
-    if file "$file" | grep -q 'shared object' || [ -L "$file" ]; then
-      ln -sf "$(pwd)/$file" "$target_lib_dir$file"
-      echo "Created symlink: $target_lib_dir$file -> $(pwd)/$file"
+    if file "$file" | grep -q 'shared object' || [[ -L "$file" ]]; then
+      target_path="$target_lib_dir$file"
+      if [[ -e "$target_path" ]]; then
+        echo "Warning: $target_path already exists. Skipping."
+      else
+        ln -s "$(pwd)/$file" "$target_path"
+        echo "Created symlink: $target_path -> $(pwd)/$file"
+      fi
     elif [[ -x "$file" ]]; then
-      # Create a symlink in the target directory
-      ln -sf "$(pwd)/$file" "$target_bin_dir$file"
-      echo "Created symlink: $target_bin_dir$file -> $(pwd)/$file"
+      target_path="$target_bin_dir$file"
+      if [[ -e "$target_path" ]]; then
+        echo "Warning: $target_path already exists. Skipping."
+      else
+        ln -s "$(pwd)/$file" "$target_path"
+        echo "Created symlink: $target_path -> $(pwd)/$file"
+      fi
     else
-      echo "skip $file"
+      echo "Skipping non-executable, non-library file: $file"
     fi
   fi
 done
-
