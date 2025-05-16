@@ -17,7 +17,8 @@ function! UpdateSelected()
   endfor
 endfunction
 
-function! ShowCopenPopup(arg)
+function! VimgrepSearch(arg)
+  echo "VimgrepSearch"
   let g:current_line = getpos('.')
   if a:arg == ''
     if empty(g:copen_list)
@@ -41,11 +42,11 @@ function! ShowCopenPopup(arg)
         \ 'line': 'cursor',
         \ 'col': 'cursor+13',
         \ 'border': [],
-        \ 'filter': 'CopenPopupFilter'
+        \ 'filter': 'VimgrepSearchFilter'
         \ })
 endfunction
 
-function! CopenPopupFilter(id, key)
+function! VimgrepSearchFilter(id, key)
   if a:key == "\<Esc>" || a:key == "\<CR>" || a:key ==# " "
     call popup_close(a:id)
   elseif a:key == "k" || a:key == "\<Up>"
@@ -65,7 +66,7 @@ function! CopenPopupFilter(id, key)
   return 1
 endfunction
 
-command! -nargs=? C call ShowCopenPopup(<q-args>)
+command! -nargs=? C call VimgrepSearch(<q-args>)
 
 "===============================================================================
 
@@ -86,9 +87,9 @@ function! JumpToScreenFraction(position)
 endfunction
 
 "===============================================================================
-"foo foo bar foo
 
 function! SearchOnCurrentScreen()
+  echo "SearchOnCurrentScreen"
   if g:resultGetChar == ""
     return 1
   endif
@@ -109,18 +110,18 @@ function! SearchOnCurrentScreen()
   endfor
   let g:bar = popup_create(g:resultGetChar, {
         \ 'border': [],
-        \ 'filter': 'BarFilter'
+        \ 'filter': 'SearchOnCurrentScreenFilter'
         \ })
 endfunction
 
-function! BarFilter(id, key)
+function! SearchOnCurrentScreenFilter(id, key)
   let curline = line('.')
   let target = []
   if a:key ==# " "
     call popup_close(a:id)
   elseif a:key == "h"
     call popup_close(a:id)
-    call ShowCopenPopup(g:resultGetChar)
+    call VimgrepSearch(g:resultGetChar)
   elseif a:key == "j"
     for loc in g:matches
       if loc[0] > curline || (loc[0] == curline && loc[1] > col('.'))
@@ -136,6 +137,7 @@ function! BarFilter(id, key)
       endif
     endfor
   elseif a:key == "l"
+    echo 123
   else
     "call popup_close(a:id)
   endif
@@ -160,8 +162,8 @@ function! CycleJancok()
 endfunction
 
 let g:jancokTitle = [
-      \["?? j? k? gg/G"],
-      \["gg=G :w :q :q!"]
+      \["?? j k @_@"],
+      \["gG } { ._."]
       \]
 
 function! JancokMenu()
@@ -181,6 +183,7 @@ function! JancokFilter(id, key)
   elseif g:jancokBool == 1
     call Filter2(a:id, a:key)
     return 1
+  endif
 endfunction
 
 noremap hl :call JancokMenu()<CR>
@@ -191,16 +194,10 @@ endfunction
 
 function! Filter1(id, key)
   if a:key ==# " "
-    call CycleJancok()
-    call popup_settext(a:id, g:jancokTitle[1])
-  elseif a:key == "h"
-    let x = input("?_? ")
-    if x != ''
-      let g:resultGetChar = x
-      call popup_close(a:id)
-      call SearchOnCurrentScreen()
-    endif
     call popup_close(a:id)
+  elseif a:key == "h"
+    call popup_close(a:id)
+    call FuzzySearch()
   elseif a:key == "j"
     if g:jancokNum
       call JancokJump(a:id, 1)
@@ -214,11 +211,8 @@ function! Filter1(id, key)
     endif
     call JumpToScreenFraction(0)
   elseif a:key == "l"
-    if line('.') == 1
-      normal! G
-    else
-      normal! gg
-    endif
+    call CycleJancok()
+    call popup_settext(a:id, g:jancokTitle[1])
   else
     call FilterElse(a:id, a:key)
   endif
@@ -227,16 +221,21 @@ endfunction
 
 function! Filter2(id, key)
   if a:key ==# " "
+    let g:jancokBool = 0
+    call popup_close(a:id)
+  elseif a:key == "h"
+    if line('.') == 1
+      normal! G
+    else
+      normal! gg
+    endif
+  elseif a:key == "j"
+    normal! }
+  elseif a:key == "k"
+    normal! {
+  elseif a:key == "l"
     call CycleJancok()
     call popup_settext(a:id, g:jancokTitle[0])
-  elseif a:key == "h"
-    normal! gg=G''
-  elseif a:key == "j"
-    w
-  elseif a:key == "k"
-    q
-  elseif a:key == "l"
-    q!
   else
     call FilterElse(a:id, a:key)
   endif
@@ -252,9 +251,21 @@ function! FilterElse(id, key)
     endif
     echo g:jancokNum
     return 1
+  elseif a:key == "u"
+    call Save()
+  elseif a:key == "i"
+    normal! gg=G''
+  elseif a:key == "s"
+    let x = input("?_? ")
+    if x != ''
+      let g:resultGetChar = x
+      call popup_close(a:id)
+      call SearchOnCurrentScreen()
+    endif
+    call popup_close(a:id)
   endif
-  let g:jancokBool = 0
-  call popup_close(a:id)
+  "let g:jancokBool = 0
+  "call popup_close(a:id)
 endfunction
 
 function! JancokJump(id, nav)
@@ -269,3 +280,41 @@ function! JancokJump(id, nav)
 endfunction
 
 "===============================================================================
+
+function! Save()
+  w
+  if &filetype ==# 'typescript' || &filetype ==# 'javascript'
+    write                         " Save file first
+    execute '!prettier --write ' . shellescape(expand('%:p'))
+  endif
+endfunction
+
+"===============================================================================
+
+function! FuzzySearch()
+  echo "FuzzySearch"
+  let g:foo = popup_create("asas", {
+        \ 'border': [],
+        \ 'filter': 'FuzzySearchFilter',
+        \ })
+endfunction
+
+let g:tempKeys = ""
+function! FuzzySearchFilter(id, key)
+  if a:key ==# " "
+    call popup_close(a:id)
+  elseif a:key ==# "\<BS>"
+    let g:tempKeys = g:tempKeys[:-2]  " remove last char
+    echo g:tempKeys
+    return 1
+  elseif a:key ==# "\<CR>"
+    return 1
+  elseif strdisplaywidth(a:key) > 0
+    let g:tempKeys .= a:key
+    echo g:tempKeys
+  else
+    " For debugging, show special key
+    echo "Special key: " . string(a:key)
+  endif
+  return 1
+endfunction
