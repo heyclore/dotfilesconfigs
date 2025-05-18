@@ -170,7 +170,7 @@ function! HJKLfilter(id, key)
     call popup_close(a:id)
   elseif a:key == "h"
     call popup_close(a:id)
-    call FuzzySearch()
+    call IncrementalSearch()
   elseif a:key == "j"
     call popup_close(a:id)
     call NavMenu()
@@ -243,6 +243,7 @@ function! NavJump(id, nav)
   endif
   let s:nav_num = 0
   call popup_close(a:id)
+
 endfunction
 
 "===============================================================================
@@ -279,41 +280,65 @@ endfunction
 
 "===============================================================================
 
-function! FuzzySearch()
-  echo "FuzzySearch"
+function! IncrementalSearch()
+  echo "IncrementalSearch"
   normal! 0
   :unmap hl
   :unmap lh
-  let g:fuzzy_search = popup_create(g:tempKeys, {
+  let s:fuzzy_search = popup_create("@_@ j? k? @_@", {
         \ 'border': [],
-        \ 'filter': 'FuzzySearchFilter',
+        \ 'filter': 'IncrementalSearchFilter',
         \ 'callback': 'HJKLcallback'
         \ })
 endfunction
 
-let g:tempKeys = ""
+let s:state_keys = ""
+let s:search_direction = ""
+let s:direction_reverse = ""
 
-function! FuzzySearchFilter(id, key)
+function! IncrementalSearchFilter(id, key)
+  if s:search_direction == '/' || s:search_direction == '?'
+    call IncrementalSearchFilterInit(a:id, a:key)
+  call popup_settext(a:id, s:search_direction)
+    return 1
+  endif
   if a:key ==# " "
-    let g:tempKeys = ""
     call popup_close(a:id)
-    call FuzzySearchFilterNav(a:id, a:key)
+  elseif a:key == "h"
+    echo 1
+  elseif a:key == "j"
+    let s:search_direction = '/'
+    let s:direction_reverse = '?'
+  elseif a:key == "k"
+    let s:search_direction = '?'
+    let s:direction_reverse = '/'
+  elseif a:key == "l"
+    echo 4
+  endif
+  return 1
+endfunction
+
+function! IncrementalSearchFilterInit(id, key)
+  if a:key ==# " "
+    let s:state_keys = ""
+    let s:search_direction = ""
+    let s:direction_reverse = ""
+    call popup_close(a:id)
   elseif a:key ==# "\<BS>"
-    let g:tempKeys = g:tempKeys[:-2]
-    if g:tempKeys == ""
+    let s:state_keys = s:state_keys[:-2]
+    if s:state_keys == ""
       return 1
     endif
-    silent! execute 'normal! ?' . "\<CR>"
-    echo g:tempKeys
+    silent! execute 'normal!' . s:direction_reverse . "\<CR>"
+    echo s:state_keys
   elseif a:key ==# "\<CR>"
     return 1
   elseif a:key =~# '^[A-Za-z0-9]$'
-    let g:tempKeys .= a:key
-    call setreg('/', g:tempKeys)
-    silent! execute 'normal! /' . "\<CR>"
-    echo g:tempKeys
+    let s:state_keys .= a:key
+    call setreg("/", s:state_keys)
+    silent! execute 'normal!'. s:search_direction . "\<CR>"
+    echo s:state_keys
   else
-    " For debugging, show special key
     echo "Special key: " . string(a:key)
   endif
   return 1
@@ -331,4 +356,3 @@ function! FuzzySearchFilterNav(id, key)
 endfunction
 
 "===============================================================================
-
