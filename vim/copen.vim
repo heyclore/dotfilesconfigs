@@ -152,165 +152,165 @@ endfunction
 
 "===============================================================================
 
-let g:resultGetChar = ""
-let g:jancokBool = 0
-let g:jancokNum = 0
-function! CycleJancok()
-  let current_val = get(g:, 'jancokBool', 0)
-  let idx = (current_val + 1) % len(g:jancokTitle)
-  let g:jancokBool = idx
-endfunction
-
-let g:jancokTitle = [
-      \["?? j k @_@"],
-      \["gG } { ._."]
-      \]
-
-function! JancokMenu()
+function! HJKLmenu()
+  echo "HJKLmenu"
   :unmap hl
   :unmap lh
-  let g:gg = popup_create(g:jancokTitle[0], {
+  let s:hjkl_menu = popup_create("/ jk % @_@", {
         \ 'border': [],
-        \ 'filter': 'JancokFilter',
-        \ 'callback': 'AsuTenan'
+        \ 'filter': 'HJKLfilter',
+        \ 'callback': 'HJKLcallback'
         \ })
 endfunction
 
-function! JancokFilter(id, key)
-  if g:jancokBool == 0
-    call Filter1(a:id, a:key)
-    return 1
-  elseif g:jancokBool == 1
-    call Filter2(a:id, a:key)
-    return 1
-  endif
-endfunction
+noremap hl :call HJKLmenu()<CR>
 
-noremap hl :call JancokMenu()<CR>
-function! AsuTenan(id, key)
-  noremap hl :call JancokMenu()<CR>
-  noremap lh :call Asu()<CR>
-endfunction
-
-function! Filter1(id, key)
+function! HJKLfilter(id, key)
   if a:key ==# " "
     call popup_close(a:id)
   elseif a:key == "h"
     call popup_close(a:id)
     call FuzzySearch()
   elseif a:key == "j"
-    if g:jancokNum
-      call JancokJump(a:id, 1)
-      return 1
-    endif
-    call JumpToScreenFraction(1)
+    call popup_close(a:id)
+    call NavMenu()
   elseif a:key == "k"
-    if g:jancokNum
-      call JancokJump(a:id, 0)
-      return 1
-    endif
-    call JumpToScreenFraction(0)
+    call popup_close(a:id)
+    call FileMenu()
   elseif a:key == "l"
-    call CycleJancok()
-    call popup_settext(a:id, g:jancokTitle[1])
-  else
-    call FilterElse(a:id, a:key)
+    echo 4
   endif
   return 1
 endfunction
 
-function! Filter2(id, key)
+function! HJKLcallback(id, key)
+  noremap hl :call HJKLmenu()<CR>
+  noremap lh :call Asu()<CR>
+endfunction
+
+"===============================================================================
+
+function! NavMenu()
+  echo "NavMenu"
+  :unmap hl
+  :unmap lh
+  let s:nav_menu = popup_create("} j k {", {
+        \ 'border': [],
+        \ 'filter': 'NavMenuFilter',
+        \ 'callback': 'HJKLcallback'
+        \ })
+endfunction
+
+function! NavMenuFilter(id, key)
+  if !exists('s:nav_num')
+    let s:nav_num = 0
+  endif
   if a:key ==# " "
-    let g:jancokBool = 0
     call popup_close(a:id)
   elseif a:key == "h"
-    if line('.') == 1
-      normal! G
-    else
-      normal! gg
-    endif
-  elseif a:key == "j"
     normal! }
+  elseif a:key == "j"
+    if s:nav_num
+      call NavJump(a:id, 1)
+    else
+      call JumpToScreenFraction(1)
+    endif
   elseif a:key == "k"
-    normal! {
+    if s:nav_num
+      call NavJump(a:id, 0)
+    else
+      call JumpToScreenFraction(0)
+    endif
   elseif a:key == "l"
-    call CycleJancok()
-    call popup_settext(a:id, g:jancokTitle[0])
-  else
-    call FilterElse(a:id, a:key)
+    normal! {
+  elseif a:key =~# '^[0-9]$'
+    let s:nav_num = s:nav_num * 10 + str2nr(a:key)
+    if s:nav_num > 71
+      let s:nav_num = str2nr(a:key)
+    endif
+    echo s:nav_num
   endif
-  "call CycleJancok()
   return 1
 endfunction
 
-function! FilterElse(id, key)
-  if a:key =~# '^[0-9]$'
-    let g:jancokNum = g:jancokNum * 10 + str2nr(a:key)
-    if g:jancokNum > 71
-      let g:jancokNum = str2nr(a:key)
-    endif
-    echo g:jancokNum
-    return 1
-  elseif a:key == "u"
-    call Save()
-  elseif a:key == "i"
-    normal! gg=G''
-  elseif a:key == "s"
-    let x = input("?_? ")
-    if x != ''
-      let g:resultGetChar = x
-      call popup_close(a:id)
-      call SearchOnCurrentScreen()
-    endif
-    call popup_close(a:id)
-  endif
-  "let g:jancokBool = 0
-  "call popup_close(a:id)
-endfunction
-
-function! JancokJump(id, nav)
-  let current_line = getpos('.')[1]
+function! NavJump(id, nav)
+  let l:current_line = getpos('.')[1]
+  let l:nav_num = s:nav_num
   if a:nav
-    call setpos('.', [0, current_line + g:jancokNum, 0, 0])
+    call setpos('.', [0, l:current_line + l:nav_num, 0, 0])
   else
-    call setpos('.', [0, current_line - g:jancokNum, 0, 0])
+    call setpos('.', [0, l:current_line - l:nav_num, 0, 0])
   endif
-  let g:jancokNum = 0
+  let s:nav_num = 0
   call popup_close(a:id)
 endfunction
 
 "===============================================================================
 
-function! Save()
-  w
-  if &filetype ==# 'typescript' || &filetype ==# 'javascript'
-    write                         " Save file first
-    execute '!prettier --write ' . shellescape(expand('%:p'))
+function! FileMenu()
+  echo "FileMenu"
+  :unmap hl
+  :unmap lh
+  let s:file_menu = popup_create("q w q! gG", {
+        \ 'border': [],
+        \ 'filter': 'FileMenuFilter',
+        \ 'callback': 'HJKLcallback'
+        \ })
+endfunction
+
+function! FileMenuFilter(id, key)
+  if a:key ==# " "
+  elseif a:key == "h"
+    quit
+  elseif a:key == "j"
+    write
+    if &filetype ==# 'typescript' || &filetype ==# 'javascript'
+      execute '!prettier --write ' . shellescape(expand('%:p'))
+    endif
+  elseif a:key == "k"
+    quit!
+  elseif a:key == "l"
+    normal! gg=G''
+    write
   endif
+  call popup_close(a:id)
+  return 1
 endfunction
 
 "===============================================================================
 
 function! FuzzySearch()
   echo "FuzzySearch"
-  let g:foo = popup_create("asas", {
+  normal! 0
+  :unmap hl
+  :unmap lh
+  let g:fuzzy_search = popup_create(g:tempKeys, {
         \ 'border': [],
         \ 'filter': 'FuzzySearchFilter',
+        \ 'callback': 'HJKLcallback'
         \ })
 endfunction
 
 let g:tempKeys = ""
+
 function! FuzzySearchFilter(id, key)
   if a:key ==# " "
+    let g:tempKeys = ""
     call popup_close(a:id)
+    call FuzzySearchFilterNav(a:id, a:key)
   elseif a:key ==# "\<BS>"
-    let g:tempKeys = g:tempKeys[:-2]  " remove last char
+    let g:tempKeys = g:tempKeys[:-2]
+    if g:tempKeys == ""
+      return 1
+    endif
+    silent! execute 'normal! ?' . "\<CR>"
     echo g:tempKeys
-    return 1
   elseif a:key ==# "\<CR>"
     return 1
-  elseif strdisplaywidth(a:key) > 0
+  elseif a:key =~# '^[A-Za-z0-9]$'
     let g:tempKeys .= a:key
+    call setreg('/', g:tempKeys)
+    silent! execute 'normal! /' . "\<CR>"
     echo g:tempKeys
   else
     " For debugging, show special key
@@ -318,3 +318,17 @@ function! FuzzySearchFilter(id, key)
   endif
   return 1
 endfunction
+
+function! FuzzySearchFilterNav(id, key)
+  if a:key ==# " "
+    echo 1
+  elseif a:key == "j"
+    echo 2
+  elseif a:key == "k"
+    echo 3
+  endif
+  return1
+endfunction
+
+"===============================================================================
+

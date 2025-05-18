@@ -203,3 +203,142 @@ function! LexWithCoords()
         \ })
 endfunction
 
+"===============================================================================
+
+let g:resultGetChar = ""
+let g:jancokBool = 0
+let g:jancokNum = 0
+function! CycleJancok()
+  let current_val = get(g:, 'jancokBool', 0)
+  let idx = (current_val + 1) % len(g:jancokTitle)
+  let g:jancokBool = idx
+endfunction
+
+let g:jancokTitle = [
+      \["?? j k @_@"],
+      \["gG } { ._."]
+      \]
+
+function! JancokMenu()
+  :unmap hl
+  :unmap lh
+  let g:gg = popup_create(g:jancokTitle[0], {
+        \ 'border': [],
+        \ 'filter': 'JancokFilter',
+        \ 'callback': 'AsuTenan'
+        \ })
+endfunction
+
+function! JancokFilter(id, key)
+  if g:jancokBool == 0
+    call Filter1(a:id, a:key)
+    return 1
+  elseif g:jancokBool == 1
+    call Filter2(a:id, a:key)
+    return 1
+  endif
+endfunction
+
+"noremap hl :call JancokMenu()<CR>
+function! AsuTenan(id, key)
+  noremap hl :call JancokMenu()<CR>
+  noremap lh :call Asu()<CR>
+endfunction
+
+function! Filter1(id, key)
+  if a:key ==# " "
+    call popup_close(a:id)
+  elseif a:key == "h"
+    call popup_close(a:id)
+    call FuzzySearch()
+  elseif a:key == "j"
+    if g:jancokNum
+      call JancokJump(a:id, 1)
+      return 1
+    endif
+    call JumpToScreenFraction(1)
+  elseif a:key == "k"
+    if g:jancokNum
+      call JancokJump(a:id, 0)
+      return 1
+    endif
+    call JumpToScreenFraction(0)
+  elseif a:key == "l"
+    call CycleJancok()
+    call popup_settext(a:id, g:jancokTitle[1])
+  else
+    call FilterElse(a:id, a:key)
+  endif
+  return 1
+endfunction
+
+function! Filter2(id, key)
+  if a:key ==# " "
+    let g:jancokBool = 0
+    call popup_close(a:id)
+  elseif a:key == "h"
+    if line('.') == 1
+      normal! G
+    else
+      normal! gg
+    endif
+  elseif a:key == "j"
+    normal! }
+  elseif a:key == "k"
+    normal! {
+  elseif a:key == "l"
+    call CycleJancok()
+    call popup_settext(a:id, g:jancokTitle[0])
+  else
+    call FilterElse(a:id, a:key)
+  endif
+  "call CycleJancok()
+  return 1
+endfunction
+
+function! FilterElse(id, key)
+  if a:key =~# '^[0-9]$'
+    let g:jancokNum = g:jancokNum * 10 + str2nr(a:key)
+    if g:jancokNum > 71
+      let g:jancokNum = str2nr(a:key)
+    endif
+    echo g:jancokNum
+    return 1
+  elseif a:key == "u"
+    call Save()
+  elseif a:key == "i"
+    normal! gg=G''
+  elseif a:key == "s"
+    let x = input("?_? ")
+    if x != ''
+      let g:resultGetChar = x
+      call popup_close(a:id)
+      call SearchOnCurrentScreen()
+    endif
+    call popup_close(a:id)
+  endif
+  "let g:jancokBool = 0
+  "call popup_close(a:id)
+endfunction
+
+function! JancokJump(id, nav)
+  let current_line = getpos('.')[1]
+  if a:nav
+    call setpos('.', [0, current_line + g:jancokNum, 0, 0])
+  else
+    call setpos('.', [0, current_line - g:jancokNum, 0, 0])
+  endif
+  let g:jancokNum = 0
+  call popup_close(a:id)
+endfunction
+
+"===============================================================================
+
+function! Save()
+  w
+  if &filetype ==# 'typescript' || &filetype ==# 'javascript'
+    write                         " Save file first
+    execute '!prettier --write ' . shellescape(expand('%:p'))
+  endif
+endfunction
+
