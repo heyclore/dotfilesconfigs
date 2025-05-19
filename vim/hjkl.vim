@@ -342,3 +342,67 @@ function! Save()
   endif
 endfunction
 
+"===============================================================================
+
+function! SearchOnCurrentScreen()
+  echo "SearchOnCurrentScreen"
+  if g:resultGetChar == ""
+    return 1
+  endif
+  let current_line = getpos('.')[1]
+  let g:matches = []
+  for lnum in range(line('w0'), line('w$'))
+    "for lnum in range(125, 125)
+    let line_text = getline(lnum)
+    let start_col = 0
+    while 1
+      let col = match(line_text, g:resultGetChar, start_col)
+      if col == -1
+        break
+      endif
+      call add(g:matches, [lnum, col + 1])
+      let start_col = col + 1
+    endwhile
+  endfor
+  let g:bar = popup_create(g:resultGetChar, {
+        \ 'border': [],
+        \ 'filter': 'SearchOnCurrentScreenFilter'
+        \ })
+endfunction
+
+function! SearchOnCurrentScreenFilter(id, key)
+  let curline = line('.')
+  let target = []
+  if a:key ==# " "
+    call popup_close(a:id)
+  elseif a:key == "h"
+    call popup_close(a:id)
+    call VimgrepSearch(g:resultGetChar)
+  elseif a:key == "j"
+    for loc in g:matches
+      if loc[0] > curline || (loc[0] == curline && loc[1] > col('.'))
+        let target = loc
+        break
+      endif
+    endfor
+  elseif a:key == "k"
+    for loc in reverse(copy(g:matches))
+      if loc[0] < curline || (loc[0] == curline && loc[1] < col('.'))
+        let target = loc
+        break
+      endif
+    endfor
+  elseif a:key == "l"
+    echo 123
+  else
+    "call popup_close(a:id)
+  endif
+  if !empty(target)
+    call setpos('.', [0, target[0], target[1], 0])
+    call popup_settext(a:id, index(g:matches, target) + 1 . "/" .
+          \len(g:matches))
+    call popup_move(a:id, {'line': 'cursor+1', 'col': 'cursor+13'})
+  endif
+  return 1
+endfunction
+

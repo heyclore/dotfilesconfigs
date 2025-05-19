@@ -88,70 +88,6 @@ endfunction
 
 "===============================================================================
 
-function! SearchOnCurrentScreen()
-  echo "SearchOnCurrentScreen"
-  if g:resultGetChar == ""
-    return 1
-  endif
-  let current_line = getpos('.')[1]
-  let g:matches = []
-  for lnum in range(line('w0'), line('w$'))
-    "for lnum in range(125, 125)
-    let line_text = getline(lnum)
-    let start_col = 0
-    while 1
-      let col = match(line_text, g:resultGetChar, start_col)
-      if col == -1
-        break
-      endif
-      call add(g:matches, [lnum, col + 1])
-      let start_col = col + 1
-    endwhile
-  endfor
-  let g:bar = popup_create(g:resultGetChar, {
-        \ 'border': [],
-        \ 'filter': 'SearchOnCurrentScreenFilter'
-        \ })
-endfunction
-
-function! SearchOnCurrentScreenFilter(id, key)
-  let curline = line('.')
-  let target = []
-  if a:key ==# " "
-    call popup_close(a:id)
-  elseif a:key == "h"
-    call popup_close(a:id)
-    call VimgrepSearch(g:resultGetChar)
-  elseif a:key == "j"
-    for loc in g:matches
-      if loc[0] > curline || (loc[0] == curline && loc[1] > col('.'))
-        let target = loc
-        break
-      endif
-    endfor
-  elseif a:key == "k"
-    for loc in reverse(copy(g:matches))
-      if loc[0] < curline || (loc[0] == curline && loc[1] < col('.'))
-        let target = loc
-        break
-      endif
-    endfor
-  elseif a:key == "l"
-    echo 123
-  else
-    "call popup_close(a:id)
-  endif
-  if !empty(target)
-    call setpos('.', [0, target[0], target[1], 0])
-    call popup_settext(a:id, index(g:matches, target) + 1 . "/" . 
-          \len(g:matches))
-    call popup_move(a:id, {'line': 'cursor+1', 'col': 'cursor+13'})
-  endif
-  return 1
-endfunction
-
-"===============================================================================
-
 function! HJKLmenu()
   echo "HJKLmenu"
   :unmap hl
@@ -295,11 +231,11 @@ endfunction
 let s:state_keys = ""
 let s:search_direction = ""
 let s:direction_reverse = ""
+let s:is_result = 0
 
 function! IncrementalSearchFilter(id, key)
   if s:search_direction == '/' || s:search_direction == '?'
     call IncrementalSearchFilterInit(a:id, a:key)
-  call popup_settext(a:id, s:search_direction)
     return 1
   endif
   if a:key ==# " "
@@ -309,9 +245,11 @@ function! IncrementalSearchFilter(id, key)
   elseif a:key == "j"
     let s:search_direction = '/'
     let s:direction_reverse = '?'
+  call popup_settext(a:id, s:search_direction)
   elseif a:key == "k"
     let s:search_direction = '?'
     let s:direction_reverse = '/'
+  call popup_settext(a:id, s:search_direction)
   elseif a:key == "l"
     echo 4
   endif
@@ -319,11 +257,21 @@ function! IncrementalSearchFilter(id, key)
 endfunction
 
 function! IncrementalSearchFilterInit(id, key)
+  if s:is_result
+    call IncrementalSearchFilterResult(a:id, a:key)
+    return 1
+  endif
   if a:key ==# " "
-    let s:state_keys = ""
-    let s:search_direction = ""
-    let s:direction_reverse = ""
-    call popup_close(a:id)
+    if s:state_keys == ""
+      let s:state_keys = ""
+      let s:search_direction = ""
+      let s:direction_reverse = ""
+      call popup_close(a:id)
+      return 1
+    endif
+  call popup_settext(a:id, "@_@")
+    let s:is_result =! s:is_result
+    return 1
   elseif a:key ==# "\<BS>"
     let s:state_keys = s:state_keys[:-2]
     if s:state_keys == ""
@@ -344,13 +292,17 @@ function! IncrementalSearchFilterInit(id, key)
   return 1
 endfunction
 
-function! FuzzySearchFilterNav(id, key)
+function! IncrementalSearchFilterResult(id, key)
   if a:key ==# " "
-    echo 1
+    let s:state_keys = ""
+    let s:search_direction = ""
+    let s:direction_reverse = ""
+    let s:is_result =! s:is_result
+    call popup_close(a:id)
   elseif a:key == "j"
-    echo 2
+    normal! n
   elseif a:key == "k"
-    echo 3
+    normal! N
   endif
   return1
 endfunction
