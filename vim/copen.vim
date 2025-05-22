@@ -1,75 +1,5 @@
 "===============================================================================
 
-let g:copen_list = []
-let g:copen_selected = 0
-
-function! UpdateSelected()
-  let numbers = []
-  for line in g:copen_list
-    let num_str = matchstr(line, '\v:\zs\d+(|)')
-    call add(numbers, str2nr(num_str))
-  endfor
-  for i in range(len(numbers))
-    if g:current_line[1] <= numbers[i]
-      let g:copen_selected = i - 1
-      break
-    endif
-  endfor
-endfunction
-
-function! VimgrepSearch(arg)
-  echo "VimgrepSearch"
-  let g:current_line = getpos('.')
-  if a:arg == ''
-    if empty(g:copen_list)
-      echo "?_?"
-      return 1
-    endif
-  else
-    execute 'silent! vimgrep /' . a:arg . '/ %'
-    let g:copen_list = map(getqflist(), 'bufname(v:val.bufnr) .
-          \":" . v:val.lnum . "|" . v:val.text')
-    if empty(g:copen_list)
-      echo "?_?"
-      return 1
-    endif
-    let g:foo = a:arg
-  endif
-  call setpos('.', g:current_line)
-
-  call UpdateSelected()
-  let g:copen_popup_id = popup_create(g:foo, {
-        \ 'line': 'cursor',
-        \ 'col': 'cursor+13',
-        \ 'border': [],
-        \ 'filter': 'VimgrepSearchFilter'
-        \ })
-endfunction
-
-function! VimgrepSearchFilter(id, key)
-  if a:key == "\<Esc>" || a:key == "\<CR>" || a:key ==# " "
-    call popup_close(a:id)
-  elseif a:key == "k" || a:key == "\<Up>"
-    let g:copen_selected = (g:copen_selected - 1 +
-          \len(g:copen_list)) % len(g:copen_list)
-    execute 'silent! cc ' . (g:copen_selected + 1)
-  elseif a:key == "j" || a:key == "\<Down>"
-    let g:copen_selected = (g:copen_selected + 1) %
-          \len(g:copen_list)
-    execute 'silent! cc ' . (g:copen_selected + 1)
-  else
-    return 0
-  endif
-  call popup_settext(g:copen_popup_id, 1 + g:copen_selected . "/" .
-        \len(g:copen_list))
-  call popup_move(a:id, {'line': 'cursor+1', 'col': 'cursor+13'})
-  return 1
-endfunction
-
-command! -nargs=? C call VimgrepSearch(<q-args>)
-
-"===============================================================================
-
 function! JumpToScreenFraction(position)
   let top = line('w0')
   let bottom = line('w$')
@@ -95,7 +25,7 @@ function! HJKLmenu()
   let s:hjkl_menu = popup_create("/ jk % @_@", {
         \ 'border': [],
         \ 'filter': 'HJKLfilter',
-        \ 'callback': 'HJKLcallback'
+        \ 'callback': 'HJKLcallback',
         \ })
 endfunction
 
@@ -200,10 +130,13 @@ function! FileMenuFilter(id, key)
   elseif a:key == "h"
     quit
   elseif a:key == "j"
-    write
     if &filetype ==# 'typescript' || &filetype ==# 'javascript'
-      execute '!prettier --write ' . shellescape(expand('%:p'))
+      "execute '!prettier --write ' . shellescape(expand('%:p'))
+      normal! ma
+      silent %!prettier --stdin-filepath %
+      normal! 'a
     endif
+    write
   elseif a:key == "k"
     quit!
   elseif a:key == "l"
@@ -221,7 +154,7 @@ function! IncrementalSearch()
   normal! 0
   :unmap hl
   :unmap lh
-  let s:fuzzy_search = popup_create("@_@ j? k? @_@", {
+  let s:fuzzy_search = popup_create("$ j? k? @_@", {
         \ 'border': [],
         \ 'filter': 'IncrementalSearchFilter',
         \ 'callback': 'HJKLcallback'
@@ -241,7 +174,9 @@ function! IncrementalSearchFilter(id, key)
   if a:key ==# " "
     call popup_close(a:id)
   elseif a:key == "h"
-    echo 1
+    let s:is_result =! s:is_result
+    let s:search_direction = '?'
+    call IncrementalSearchFilterInit(a:id, a:key)
   elseif a:key == "j"
     let s:search_direction = '/'
     let s:direction_reverse = '?'
