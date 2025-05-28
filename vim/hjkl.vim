@@ -1,79 +1,9 @@
-let sloc = line('$')
-let topline = line('w0')
-let botline = line('w$')
-
-function! ListDynamicRanges()
-  let start_line = line('w0')
-  let end_line = line('w$')
-
-  let total_lines = end_line - start_line + 1
-  let range_size = total_lines / 4
-
-  let ranges = []
-  for i in range(0, 3)
-    let subrange_start = start_line + i * range_size
-    let subrange_end = start_line + (i + 1) * range_size - 1
-    if i == 3
-      let subrange_end = end_line
-    endif
-    call add(ranges, [subrange_start, subrange_end])
-  endfor
-
-  return ranges
-endfunction
-
-
-
-function! SelectWithKeys()
-  "let options = ['Option 1', 'Option 2', 'Option 3']
-  let options = ListDynamicRanges()
-  let index = 0  " Start with the first option
-
-  while 1
-    let key = getchar()
-    if key == 106
-      let index = (index + 1) % len(options)
-    elseif key == 107
-      let index = (index - 1 + len(options)) % len(options)
-    elseif key == 13 || key == 108
-      "echo 'Final selection: ' . options[index]
-      break
-    endif
-    "echo options[index]
-    "echo options[index][0] options[index][1]
-    execute '2match Comment /^\%>' . (options[index][0]-1) . 'l\%<' . (options[index][1]+1) . 'l.\+$/'
-    echo key
-  endwhile
-endfunction
-
-"call SelectWithKeys()
-
-function! Foo()
-  let current_line = getpos('.')[1]
-  let matches = []
-  let search = 'te'
-  for lnum in range(line('w0'), line('w$'))
-    let line_text = getline(lnum)
-    let start_col = 0
-    while 1
-      let col = match(line_text, search, start_col)
-      if col == -1
-        break
-      endif
-      call add(matches, [lnum, col + 1])
-      let start_col = col + 1
-    endwhile
-  endfor
-  let less = filter(copy(matches), {i, v -> v[0] < current_line})
-  let more = filter(copy(matches), {i, v -> v[0] >= current_line})
-  echo less current_line more
-endfunction
+"===============================================================================
 
 function! JumpToScreenFraction(position)
   let top = line('w0')
   let bottom = line('w$')
   let range = bottom - top
-
   if a:position ==# 0
     let target = top + float2nr(range / 4)
   elseif a:position ==# 1
@@ -82,397 +12,234 @@ function! JumpToScreenFraction(position)
     echoerr "Invalid position: " . a:position
     return
   endif
-
   call setpos('.', [0, target, 1, 0])
   normal! zz
 endfunction
 
-nnoremap K :call JumpToScreenFraction(0)<CR>
-nnoremap J :call JumpToScreenFraction(1)<CR>
-
-
-
-function! SetLangInfo() abort
-  if exists('g:lang_info')
-    return
-  endif
-  let g:lang_info = {
-        \ 'filetype': '',
-        \ 'keywords': [],
-        \ 'symbols': []
-        \ }
-  if &filetype ==# 'javascript' || &filetype ==# 'typescript'
-    let g:lang_info.filetype = 'javascript'
-    let g:lang_info.keywords = ['if', 'else', 'for', 'while', 'function',
-          \'const', 'let', 'var', 'return', 'switch', 'case', 'break', 'try',
-          \'catch', 'finally', 'typeof', 'new', 'class', 'interface',
-          \'extends', 'implements']
-  elseif &filetype ==# 'python'
-    let g:lang_info.filetype = 'python'
-    let g:lang_info.keywords = ['if', 'else', 'elif', 'for', 'while', 'def',
-          \'class', 'import', 'from', 'return', 'try', 'except', 'finally',
-          \'with', 'as', 'pass', 'break', 'continue', 'lambda', 'global',
-          \'nonlocal']
-  elseif &filetype ==# 'c'
-    let g:lang_info.filetype = 'c'
-    let g:lang_info.keywords = ['if', 'else', 'for', 'while', 'do', 'switch',
-          \'case', 'break', 'continue', 'return', 'int', 'float', 'char',
-          \'double', 'void', 'struct', 'union', 'typedef', 'enum', 'const',
-          \'static', 'extern']
-  else
-    let g:lang_info.filetype = 'unsupported'
-    let g:lang_info.keywords = []
-  endif
-  let g:lang_info.symbols = ['+', '-', '*', '/', '=', '==', '!=', '<', '>',
-        \'<=', '>=', '++', '--', '->', '.', ',', ';', '@', '&&', '||',
-        \'===', '!==', '?', ':', '&', '|', '^', '~', '%', '!']
-endfunction
-
-
-function! LexWithCoords()
-  let current_line = line('.')
-  let line_text = getline(current_line)
-  let result = []
-  let s = line_text
-  let col = 1
-  let pattern = '\v\w+|[[:punct:]]'
-  while len(s) > 0
-    let match = matchstr(s, pattern)
-    if match == ''
-      break
-    endif
-    let idx = match(line_text[col - 1:], '\V' . escape(match, '\'))
-    if idx >= 0
-      let real_col = col + idx
-      let type = 0
-      if match =~ '^\d\+$' || match =~ '^\d*\.\d\+$'
-        let type = 1
-      elseif match =~ '^\w\+$'
-        let type = 2
-      endif
-      call add(result, [current_line, real_col, match, type])
-      let col = real_col + len(match)
-    else
-      break
-    endif
-    "let s = a:str[col - 1:]
-    let s = line_text[col - 1:]
-    let s = substitute(s, '^\s*', '', '')
-    let col = col + strlen(line_text[col - 1:]) - strlen(s)
-  endwhile
-  let g:matches = result
-  let g:bar = popup_create(g:resultGetChar, {
-        \ 'border': [],
-        \ 'filter': 'BarFilter'
-        \ })
-endfunction
-
-
-function! LexWithCoords()
-  let current_line = line('.')
-  let line_text = getline(current_line)
-  let result = []
-  let s = line_text
-  let col = 1
-  let pattern = '\v\w+'  " Match only words
-
-  while len(s) > 0
-    let match = matchstr(s, pattern)
-    if match == ''
-      break
-    endif
-
-    let idx = match(line_text[col - 1:], '\V' . escape(match, '\'))
-    if idx >= 0
-      let real_col = col + idx
-      call add(result, [current_line, real_col, match])
-      let col = real_col + len(match)
-    else
-      break
-    endif
-
-    let s = line_text[col - 1:]
-    let s = substitute(s, '^\s*', '', '')
-    let col = col + strlen(line_text[col - 1:]) - strlen(s)
-  endwhile
-
-  let g:matches = result
-  let g:bar = popup_create(g:resultGetChar, {
-        \ 'border': [],
-        \ 'filter': 'BarFilter'
-        \ })
-endfunction
-
 "===============================================================================
 
-let g:resultGetChar = ""
-let g:jancokBool = 0
-let g:jancokNum = 0
-function! CycleJancok()
-  let current_val = get(g:, 'jancokBool', 0)
-  let idx = (current_val + 1) % len(g:jancokTitle)
-  let g:jancokBool = idx
-endfunction
-
-let g:jancokTitle = [
-      \["?? j k @_@"],
-      \["gG } { ._."]
-      \]
-
-function! JancokMenu()
+function! HJKLmenu()
+  echo "HJKLmenu"
   :unmap hl
   :unmap lh
-  let g:gg = popup_create(g:jancokTitle[0], {
+  let s:hjkl_menu = popup_create("/ jk % @_@", {
         \ 'border': [],
-        \ 'filter': 'JancokFilter',
-        \ 'callback': 'AsuTenan'
+        \ 'filter': 'HJKLfilter',
+        \ 'callback': 'HJKLcallback',
         \ })
 endfunction
 
-function! JancokFilter(id, key)
-  if g:jancokBool == 0
-    call Filter1(a:id, a:key)
-    return 1
-  elseif g:jancokBool == 1
-    call Filter2(a:id, a:key)
-    return 1
+noremap hl :call HJKLmenu()<CR>
+
+function! HJKLfilter(id, key)
+  if a:key ==# " "
+    call popup_close(a:id)
+  elseif a:key == "h"
+    call popup_close(a:id)
+    call IncrementalSearch()
+  elseif a:key == "j"
+    call popup_close(a:id)
+    call NavMenu()
+  elseif a:key == "k"
+    call popup_close(a:id)
+    call FileMenu()
+  elseif a:key == "l"
+    echo 4
   endif
+  return 1
 endfunction
 
-"noremap hl :call JancokMenu()<CR>
-function! AsuTenan(id, key)
-  noremap hl :call JancokMenu()<CR>
+function! HJKLcallback(id, key)
+  noremap hl :call HJKLmenu()<CR>
   noremap lh :call Asu()<CR>
 endfunction
 
-function! Filter1(id, key)
-  if a:key ==# " "
-    call popup_close(a:id)
-  elseif a:key == "h"
-    call popup_close(a:id)
-    call FuzzySearch()
-  elseif a:key == "j"
-    if g:jancokNum
-      call JancokJump(a:id, 1)
-      return 1
-    endif
-    call JumpToScreenFraction(1)
-  elseif a:key == "k"
-    if g:jancokNum
-      call JancokJump(a:id, 0)
-      return 1
-    endif
-    call JumpToScreenFraction(0)
-  elseif a:key == "l"
-    call CycleJancok()
-    call popup_settext(a:id, g:jancokTitle[1])
-  else
-    call FilterElse(a:id, a:key)
-  endif
-  return 1
+"===============================================================================
+
+function! NavMenu()
+  echo "NavMenu"
+  :unmap hl
+  :unmap lh
+  let s:nav_menu = popup_create("} j k {", {
+        \ 'border': [],
+        \ 'filter': 'NavMenuFilter',
+        \ 'callback': 'HJKLcallback'
+        \ })
 endfunction
 
-function! Filter2(id, key)
+function! NavMenuFilter(id, key)
+  if !exists('s:nav_num')
+    let s:nav_num = 0
+  endif
   if a:key ==# " "
-    let g:jancokBool = 0
     call popup_close(a:id)
   elseif a:key == "h"
-    if line('.') == 1
-      normal! G
-    else
-      normal! gg
-    endif
-  elseif a:key == "j"
     normal! }
+  elseif a:key == "j"
+    if s:nav_num
+      call NavJump(a:id, 1)
+    else
+      call JumpToScreenFraction(1)
+    endif
   elseif a:key == "k"
-    normal! {
+    if s:nav_num
+      call NavJump(a:id, 0)
+    else
+      call JumpToScreenFraction(0)
+    endif
   elseif a:key == "l"
-    call CycleJancok()
-    call popup_settext(a:id, g:jancokTitle[0])
-  else
-    call FilterElse(a:id, a:key)
+    normal! {
+  elseif a:key =~# '^[0-9]$'
+    let s:nav_num = s:nav_num * 10 + str2nr(a:key)
+    if s:nav_num > 71
+      let s:nav_num = str2nr(a:key)
+    endif
+    echo s:nav_num
   endif
-  "call CycleJancok()
   return 1
 endfunction
 
-function! FilterElse(id, key)
-  if a:key =~# '^[0-9]$'
-    let g:jancokNum = g:jancokNum * 10 + str2nr(a:key)
-    if g:jancokNum > 71
-      let g:jancokNum = str2nr(a:key)
-    endif
-    echo g:jancokNum
-    return 1
-  elseif a:key == "u"
-    call Save()
-  elseif a:key == "i"
-    normal! gg=G''
-  elseif a:key == "s"
-    let x = input("?_? ")
-    if x != ''
-      let g:resultGetChar = x
-      call popup_close(a:id)
-      call SearchOnCurrentScreen()
-    endif
-    call popup_close(a:id)
-  endif
-  "let g:jancokBool = 0
-  "call popup_close(a:id)
-endfunction
-
-function! JancokJump(id, nav)
-  let current_line = getpos('.')[1]
+function! NavJump(id, nav)
+  let l:current_line = getpos('.')[1]
+  let l:nav_num = s:nav_num
   if a:nav
-    call setpos('.', [0, current_line + g:jancokNum, 0, 0])
+    call setpos('.', [0, l:current_line + l:nav_num, 0, 0])
   else
-    call setpos('.', [0, current_line - g:jancokNum, 0, 0])
+    call setpos('.', [0, l:current_line - l:nav_num, 0, 0])
   endif
-  let g:jancokNum = 0
+  let s:nav_num = 0
   call popup_close(a:id)
+
 endfunction
 
 "===============================================================================
 
-function! Save()
-  w
-  if &filetype ==# 'typescript' || &filetype ==# 'javascript'
-    write                         " Save file first
-    execute '!prettier --write ' . shellescape(expand('%:p'))
-  endif
-endfunction
-
-"===============================================================================
-
-function! SearchOnCurrentScreen()
-  echo "SearchOnCurrentScreen"
-  if g:resultGetChar == ""
-    return 1
-  endif
-  let current_line = getpos('.')[1]
-  let g:matches = []
-  for lnum in range(line('w0'), line('w$'))
-    "for lnum in range(125, 125)
-    let line_text = getline(lnum)
-    let start_col = 0
-    while 1
-      let col = match(line_text, g:resultGetChar, start_col)
-      if col == -1
-        break
-      endif
-      call add(g:matches, [lnum, col + 1])
-      let start_col = col + 1
-    endwhile
-  endfor
-  let g:bar = popup_create(g:resultGetChar, {
+function! FileMenu()
+  echo "FileMenu"
+  :unmap hl
+  :unmap lh
+  let s:file_menu = popup_create("q w q! gG", {
         \ 'border': [],
-        \ 'filter': 'SearchOnCurrentScreenFilter'
+        \ 'filter': 'FileMenuFilter',
+        \ 'callback': 'HJKLcallback'
         \ })
 endfunction
 
-function! SearchOnCurrentScreenFilter(id, key)
-  let curline = line('.')
-  let target = []
+function! FileMenuFilter(id, key)
+  if a:key ==# " "
+  elseif a:key == "h"
+    quit
+  elseif a:key == "j"
+    if &filetype ==# 'typescript' || &filetype ==# 'javascript'
+      "execute '!prettier --write ' . shellescape(expand('%:p'))
+      normal! ma
+      silent %!prettier --stdin-filepath %
+      normal! 'a
+    endif
+    write
+  elseif a:key == "k"
+    quit!
+  elseif a:key == "l"
+    normal! gg=G''
+    write
+  endif
+  call popup_close(a:id)
+  return 1
+endfunction
+
+"===============================================================================
+
+function! IncrementalSearch()
+  echo "IncrementalSearch"
+  normal! 0
+  :unmap hl
+  :unmap lh
+  let s:fuzzy_search = popup_create("$ j? k? @_@", {
+        \ 'border': [],
+        \ 'filter': 'IncrementalSearchFilter',
+        \ 'callback': 'HJKLcallback'
+        \ })
+endfunction
+
+let s:state_keys = ""
+let s:search_direction = ""
+let s:direction_reverse = ""
+let s:is_result = 0
+
+function! IncrementalSearchFilter(id, key)
+  if s:search_direction == '/' || s:search_direction == '?'
+    call IncrementalSearchFilterInit(a:id, a:key)
+    return 1
+  endif
   if a:key ==# " "
     call popup_close(a:id)
   elseif a:key == "h"
-    call popup_close(a:id)
-    call VimgrepSearch(g:resultGetChar)
+    let s:is_result =! s:is_result
+    let s:search_direction = '?'
+    call IncrementalSearchFilterInit(a:id, a:key)
   elseif a:key == "j"
-    for loc in g:matches
-      if loc[0] > curline || (loc[0] == curline && loc[1] > col('.'))
-        let target = loc
-        break
-      endif
-    endfor
+    let s:search_direction = '/'
+    let s:direction_reverse = '?'
+  call popup_settext(a:id, s:search_direction)
   elseif a:key == "k"
-    for loc in reverse(copy(g:matches))
-      if loc[0] < curline || (loc[0] == curline && loc[1] < col('.'))
-        let target = loc
-        break
-      endif
-    endfor
+    let s:search_direction = '?'
+    let s:direction_reverse = '/'
+  call popup_settext(a:id, s:search_direction)
   elseif a:key == "l"
-    echo 123
-  else
-    "call popup_close(a:id)
-  endif
-  if !empty(target)
-    call setpos('.', [0, target[0], target[1], 0])
-    call popup_settext(a:id, index(g:matches, target) + 1 . "/" .
-          \len(g:matches))
-    call popup_move(a:id, {'line': 'cursor+1', 'col': 'cursor+13'})
+    echo 4
   endif
   return 1
+endfunction
+
+function! IncrementalSearchFilterInit(id, key)
+  if s:is_result
+    call IncrementalSearchFilterResult(a:id, a:key)
+    return 1
+  endif
+  if a:key ==# " "
+    if s:state_keys == ""
+      let s:state_keys = ""
+      let s:search_direction = ""
+      let s:direction_reverse = ""
+      call popup_close(a:id)
+      return 1
+    endif
+  call popup_settext(a:id, "@_@")
+    let s:is_result =! s:is_result
+    return 1
+  elseif a:key ==# "\<BS>"
+    let s:state_keys = s:state_keys[:-2]
+    if s:state_keys == ""
+      return 1
+    endif
+    silent! execute 'normal!' . s:direction_reverse . "\<CR>"
+    echo s:state_keys
+  elseif a:key ==# "\<CR>"
+    return 1
+  elseif a:key =~# '^[A-Za-z0-9]$'
+    let s:state_keys .= a:key
+    call setreg("/", s:state_keys)
+    silent! execute 'normal!'. s:search_direction . "\<CR>"
+    echo s:state_keys
+  else
+    echo "Special key: " . string(a:key)
+  endif
+  return 1
+endfunction
+
+function! IncrementalSearchFilterResult(id, key)
+  if a:key ==# " "
+    let s:state_keys = ""
+    let s:search_direction = ""
+    let s:direction_reverse = ""
+    let s:is_result =! s:is_result
+    call popup_close(a:id)
+  elseif a:key == "j"
+    normal! n
+  elseif a:key == "k"
+    normal! N
+  endif
+  return1
 endfunction
 
 "===============================================================================
-
-let g:copen_list = []
-let g:copen_selected = 0
-
-function! UpdateSelected()
-  let numbers = []
-  for line in g:copen_list
-    let num_str = matchstr(line, '\v:\zs\d+(|)')
-    call add(numbers, str2nr(num_str))
-  endfor
-  for i in range(len(numbers))
-    if g:current_line[1] <= numbers[i]
-      let g:copen_selected = i - 1
-      break
-    endif
-  endfor
-endfunction
-
-function! VimgrepSearch(arg)
-  echo "VimgrepSearch"
-  let g:current_line = getpos('.')
-  if a:arg == ''
-    if empty(g:copen_list)
-      echo "?_?"
-      return 1
-    endif
-  else
-    execute 'silent! vimgrep /' . a:arg . '/ %'
-    let g:copen_list = map(getqflist(), 'bufname(v:val.bufnr) .
-          \":" . v:val.lnum . "|" . v:val.text')
-    if empty(g:copen_list)
-      echo "?_?"
-      return 1
-    endif
-    let g:foo = a:arg
-  endif
-  call setpos('.', g:current_line)
-
-  call UpdateSelected()
-  let g:copen_popup_id = popup_create(g:foo, {
-        \ 'line': 'cursor',
-        \ 'col': 'cursor+13',
-        \ 'border': [],
-        \ 'filter': 'VimgrepSearchFilter'
-        \ })
-endfunction
-
-function! VimgrepSearchFilter(id, key)
-  if a:key == "\<Esc>" || a:key == "\<CR>" || a:key ==# " "
-    call popup_close(a:id)
-  elseif a:key == "k" || a:key == "\<Up>"
-    let g:copen_selected = (g:copen_selected - 1 +
-          \len(g:copen_list)) % len(g:copen_list)
-    execute 'silent! cc ' . (g:copen_selected + 1)
-  elseif a:key == "j" || a:key == "\<Down>"
-    let g:copen_selected = (g:copen_selected + 1) %
-          \len(g:copen_list)
-    execute 'silent! cc ' . (g:copen_selected + 1)
-  else
-    return 0
-  endif
-  call popup_settext(g:copen_popup_id, 1 + g:copen_selected . "/" .
-        \len(g:copen_list))
-  call popup_move(a:id, {'line': 'cursor+1', 'col': 'cursor+13'})
-  return 1
-endfunction
-
-command! -nargs=? C call VimgrepSearch(<q-args>)
-
