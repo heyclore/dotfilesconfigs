@@ -45,6 +45,8 @@ set completeopt-=preview
 set ts=2 sw=2 expandtab
 set shell=bash\ -l
 set signcolumn=no
+:setl autoread
+":set autoread
 "set nowrap
 "set incsearch
 
@@ -64,6 +66,7 @@ inoremap jj <ESC>
 inoremap jk <CR>
 nnoremap ZZ :q<CR>
 nnoremap Zz :q!<CR>
+nnoremap W :w<CR>
 
 " Swap [ with Shift+[ (i.e., {)
 "nnoremap [ {
@@ -110,13 +113,25 @@ function! ConsolePrint()
     exec 'bel term ++shell javac % && java %:t:r'
   endif
 
+  if &filetype == 'typescript'
+    npx ts-node foo.ts
+    exec 'bel term npx ts-node %'
+  endif
   if &filetype == 'javascript'
     exec 'bel term node %'
   endif
 
   if &filetype == 'c'
+    if getline(1) !~ '^#/\*'
+      call append(0, '#/*')
+      call append(1, 'gcc ' . expand('%') . ' && ./a.out; exit 0; */')
+      call append(2, '')
+      silent! exec 'chmod +x %'
+      return ConsolePrint()
+    endif
     "exec 'bel term ++shell gcc -o "%:t:r" % && ./%:t:r'
-    exec 'bel term ++shell gcc -o "%:t:r" -lX11 -lXpm -lXrandr % && ./%:t:r'
+    "exec 'bel term ++shell gcc -o "%:t:r" -lX11 -lXpm -lXrandr -lm % && ./%:t:r'
+    exec 'bel term ./%'
   endif
 
   if &filetype == 'dart'
@@ -145,7 +160,7 @@ endfunction
 "nmap <F3> :copen <CR>
 nmap <F2> :call ConsolePrint()<CR>
 nmap <F1> :call SearchMultipleValues()<CR>
-nnoremap Q :bd<CR>
+"nnoremap Q :bd<CR>
 ""##### END FUCNTION #####
 "let g:lsc_dart_sdk_path = '~/AUR/flutter/bin/cache/dart-sdk/'
 "let g:lsc_auto_map = {
@@ -196,8 +211,8 @@ let g:csv_delim=','
 let g:csv_default_delim=','
 
 function! Asu()
-  exec 'source /home/noodle/apps/git/dotfilesconfigs/vim/copen.vim'
+  exec 'source /home/noodle/apps/git/dotfilesconfigs/vim/hjkl.vim'
 endfunction
 
-nmap <F3> :call Asu()<CR>
-noremap hl :call JancokMenu()<CR>
+nmap lh :call Asu()<CR>
+"noremap hl :call JancokMenu()<CR>

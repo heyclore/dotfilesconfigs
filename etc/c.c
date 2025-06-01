@@ -1,12 +1,5 @@
 #/*
-main='c.c'
-exe='exe.exe'
-gcc $main -o /tmp/$exe
-if [ $? -eq 0 ]; then
-    /tmp/$exe
-fi
-exit 0
-*/
+gcc c.c && ./a.out; exit 0; */
 
 #include <stdio.h>
 

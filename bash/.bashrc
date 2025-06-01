@@ -5,6 +5,8 @@
 # If not running interactively, don't do anything
 [[ $- != *i* ]] && return
 set -o vi
+bind '"jj": vi-movement-mode'
+bind -m vi-command '"l": accept-line'
 
 #alias ls='ls --color=auto'
 #alias rb='bundle exec ruby'
@@ -27,10 +29,11 @@ set -o vi
 alias neofetch='neofetch --ascii_colors 8 --colors 7 8 7 8 8 7'
 alias fp='sudo pacman --downloadonly --cachedir=/tmp -Sw'
 alias ll='export JANCOK=1'
+#alias sdl='export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/apps/pac/sdl3/lib/"'
+#alias sdl='export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/apps/git/SDL/sdl3/lib/":export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/apps/git/SDL_image/SDL_image/lib/"'
+#alias sdl='export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/apps/git/SDL/sdl3/lib:/home/noodle/apps/git/SDL_image/SDL_image/lib"'
 
 alias xx='xrandr --output DisplayPort-0 --mode 1680x1050 --scale 1x1 --rotate normal'
-
-
 
 #PS1='[\u@\h \W]\$ '
 
@@ -63,10 +66,18 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 #[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-
 #GIMP
 #export PATH="${PATH}:~/winedoews/usr/bin"
 #export LD_LIBRARY_PATH=~/winedoews/usr/lib
 #export BABL_PATH=~/winedoews/usr/lib/babl-0.1
 #export GEGL_PATH=~/winedoews/usr/lib/gegl-0.4/
 
+export NNN_PLUG=";:preview-tabbed"
+export NNN_FIFO="/tmp/nnn.fifo"
+if [ -f /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh ]; then
+  source /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh
+fi
+makepkgp() {
+  export PATH="$PATH:/home/noodle/containers/compiler/usr/bin"
+  export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/containers/compiler/usr/lib"
+}
