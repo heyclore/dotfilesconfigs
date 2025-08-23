@@ -134,6 +134,7 @@ function! FileMenuFilter(id, key)
       "execute '!prettier --write ' . shellescape(expand('%:p'))
       normal! ma
       silent %!prettier --stdin-filepath %
+      "silent %!prettier --stdin-filepath % --no-config
       normal! 'a
     endif
     write

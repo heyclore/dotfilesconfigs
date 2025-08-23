@@ -13,7 +13,7 @@ pactl load-module module-loopback source=alsa_output.pci-0000_03_00.6.analog-ste
 
 
 # Set the value of foo
-foo=0  # or foo=1 depending on your requirement
+foo=1  # or foo=1 depending on your requirement
 
 # Common part of the ffmpeg command including -ar and -ac
 common_ffmpeg_cmd="ffmpeg -y \
