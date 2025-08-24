@@ -27,7 +27,7 @@ bind -m vi-command '"l": accept-line'
 #alias ffe='flutter run -d emulator-5554'
 #alias pp='python -m pytest test'
 alias neofetch='neofetch --ascii_colors 8 --colors 7 8 7 8 8 7'
-alias fp='sudo pacman --downloadonly --cachedir=/tmp -Sw'
+#alias fpp='sudo pacman --downloadonly --cachedir=/tmp/tmp -Sw'
 alias ll='export JANCOK=1'
 #alias sdl='export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/apps/pac/sdl3/lib/"'
 #alias sdl='export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/apps/git/SDL/sdl3/lib/":export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/apps/git/SDL_image/SDL_image/lib/"'
@@ -45,6 +45,7 @@ PS1='$(parse_git_branch)[\u@\h \W]$ '
 export EDITOR="vim"
 #export JAVA_HOME="/opt/android-studio/jre/"
 export _JAVA_AWT_WM_NONREPARENTING=1
+export APPIMAGE_EXTRACT_AND_RUN=1
 #export ANDROID_HOME="/home/noodle/Android/Sdk"
 #export GH_DEBUG=true
 #export MAVEN_HOME="~/AUR/apache-maven-3.9.0"
@@ -72,12 +73,12 @@ export NVM_DIR="$HOME/.nvm"
 #export BABL_PATH=~/winedoews/usr/lib/babl-0.1
 #export GEGL_PATH=~/winedoews/usr/lib/gegl-0.4/
 
-export NNN_PLUG=";:preview-tabbed"
+#export NNN_PLUG=";:preview-tabbed"
 export NNN_FIFO="/tmp/nnn.fifo"
 if [ -f /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh ]; then
   source /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh
 fi
-makepkgp() {
-  export PATH="$PATH:/home/noodle/containers/compiler/usr/bin"
-  export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/containers/compiler/usr/lib"
-}
+#makepkgp() {
+#  export PATH="$PATH:/home/noodle/containers/compiler/usr/bin"
+#  export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/containers/compiler/usr/lib"
+#}
