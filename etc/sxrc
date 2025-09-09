@@ -1,5 +1,7 @@
-#~/.config/sx/sxrc
 export XCURSOR_SIZE=11
 xrandr --output DisplayPort-2 --rotation right --scale 1.171
 unclutter --timeout 1 &
+if ! pactl list short modules | grep -q module-alsa-source; then
+    pactl load-module module-alsa-source device=hw:1,0
+fi
 exec dwm
