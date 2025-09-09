@@ -1,3 +1,4 @@
+#~/.config/sx/sxrc
 export XCURSOR_SIZE=11
 xrandr --output DisplayPort-2 --rotation right --scale 1.171
 unclutter --timeout 1 &
