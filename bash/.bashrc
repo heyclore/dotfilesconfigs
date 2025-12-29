@@ -62,6 +62,7 @@ export LD_LIBRARY_PATH="${LD_LIBRARY_PATH}:/home/noodle/apps/lib"
 #export PATH="${PATH}:~/.local/ruby-2.7.0/bin/"
 #export PATH="${PATH}:${MAVEN_HOME}/bin/"
 #export CHROME_EXECUTABLE="/usr/bin/google-chrome-stable"
+export GEMINI_MODEL="gemini-2.5-flash-lite"
 
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm

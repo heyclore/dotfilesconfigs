@@ -10,7 +10,7 @@ Plugin 'vim-airline/vim-airline-themes'
 Plugin 'Jorengarenar/vim-darkness'
 Plugin 'jreybert/vimagit'
 if bash_variable == 1
-  Plugin 'dart-lang/dart-vim-plugin'
+  "Plugin 'dart-lang/dart-vim-plugin'
   Plugin 'prabirshrestha/vim-lsp'
   Plugin 'mattn/vim-lsp-settings'
 endif
@@ -114,7 +114,7 @@ function! ConsolePrint()
   endif
 
   if &filetype == 'typescript'
-    npx ts-node foo.ts
+    "npx ts-node foo.ts
     exec 'bel term npx ts-node %'
   endif
   if &filetype == 'javascript'
@@ -158,8 +158,15 @@ endfunction
 
 "nmap <F4> :LSClientShowHover<CR>
 "nmap <F3> :copen <CR>
-nmap <F2> :call ConsolePrint()<CR>
-nmap <F1> :call SearchMultipleValues()<CR>
+"nnoremap <F1> :call SearchMultipleValues()<CR>
+nnoremap <F2> :w<CR>
+inoremap <F2> <Esc>:w<CR>
+nnoremap <F3> :call ConsolePrint()<CR>
+"nnoremap <F5> :w !tee /tmp/vim-clip-$$ \| xclip -selection clipboard<CR>
+nnoremap <F5> :silent execute 'w !xclip -selection clipboard > /dev/null 2>&1'<CR>
+" Navigate autocomplete menus
+inoremap <C-j> <C-n>
+inoremap <C-k> <C-p>
 "nnoremap Q :bd<CR>
 ""##### END FUCNTION #####
 "let g:lsc_dart_sdk_path = '~/AUR/flutter/bin/cache/dart-sdk/'
@@ -179,7 +186,7 @@ nmap <F1> :call SearchMultipleValues()<CR>
 "    \}
 
 function! s:on_lsp_buffer_enabled() abort
-  "setlocal omnifunc=lsp#complete
+  setlocal omnifunc=lsp#complete
   "setlocal signcolumn=yes
   if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
   nmap <buffer> ga <plug>(lsp-code-action-float)
@@ -195,9 +202,11 @@ function! s:on_lsp_buffer_enabled() abort
   "nmap <buffer> <leader>rn <plug>(lsp-rename)
   "nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
   "nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
+  inoremap <buffer> <C-x><C-x> <C-x><C-o>
 
   "let g:lsp_format_sync_timeout = 1000
-  "autocmd! BufWritePre *.rs,*.go call execute('LspDocumentFormatSync')
+  "autocmd! BufWritePre *.ts,*.go call execute('LspDocumentFormatSync')
+  autocmd BufWritePre *.ts,*.tsx :silent! execute '%!prettier --stdin-filepath %'
 
   " refer to doc to add more commands
 endfunction

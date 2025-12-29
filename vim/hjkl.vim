@@ -30,6 +30,7 @@ function! HJKLmenu()
 endfunction
 
 noremap hl :call HJKLmenu()<CR>
+inoremap hl <ESC>:call HJKLmenu()<CR>
 
 function! HJKLfilter(id, key)
   if a:key ==# " "
@@ -133,7 +134,7 @@ function! FileMenuFilter(id, key)
     if &filetype ==# 'typescript' || &filetype ==# 'javascript'
       "execute '!prettier --write ' . shellescape(expand('%:p'))
       normal! ma
-      silent %!prettier --stdin-filepath %
+      "silent %!prettier --stdin-filepath %
       "silent %!prettier --stdin-filepath % --no-config
       normal! 'a
     endif
