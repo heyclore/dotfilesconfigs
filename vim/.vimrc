@@ -206,7 +206,7 @@ function! s:on_lsp_buffer_enabled() abort
 
   "let g:lsp_format_sync_timeout = 1000
   "autocmd! BufWritePre *.ts,*.go call execute('LspDocumentFormatSync')
-  autocmd BufWritePre *.ts,*.tsx :silent! execute '%!prettier --stdin-filepath %'
+  "autocmd BufWritePre *.ts,*.tsx :silent! execute '%!prettier --stdin-filepath %'
 
   " refer to doc to add more commands
 endfunction

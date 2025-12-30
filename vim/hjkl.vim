@@ -115,6 +115,8 @@ endfunction
 
 "===============================================================================
 
+let s:has_prettier = executable('prettier')
+
 function! FileMenu()
   echo "FileMenu"
   :unmap hl
@@ -133,10 +135,12 @@ function! FileMenuFilter(id, key)
   elseif a:key == "j"
     if &filetype ==# 'typescript' || &filetype ==# 'javascript'
       "execute '!prettier --write ' . shellescape(expand('%:p'))
-      normal! ma
       "silent %!prettier --stdin-filepath %
-      "silent %!prettier --stdin-filepath % --no-config
-      normal! 'a
+      if s:has_prettier
+        normal! ma
+        silent %!prettier --stdin-filepath % --no-config
+        normal! 'a
+      endif
     endif
     write
   elseif a:key == "k"
@@ -182,11 +186,11 @@ function! IncrementalSearchFilter(id, key)
   elseif a:key == "j"
     let s:search_direction = '/'
     let s:direction_reverse = '?'
-  call popup_settext(a:id, s:search_direction)
+    call popup_settext(a:id, s:search_direction)
   elseif a:key == "k"
     let s:search_direction = '?'
     let s:direction_reverse = '/'
-  call popup_settext(a:id, s:search_direction)
+    call popup_settext(a:id, s:search_direction)
   elseif a:key == "l"
     echo 4
   endif
@@ -206,7 +210,7 @@ function! IncrementalSearchFilterInit(id, key)
       call popup_close(a:id)
       return 1
     endif
-  call popup_settext(a:id, "@_@")
+    call popup_settext(a:id, "@_@")
     let s:is_result =! s:is_result
     return 1
   elseif a:key ==# "\<BS>"
