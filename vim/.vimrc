@@ -18,7 +18,7 @@ def SetupPlugins(): void
     return
   endif
 
-  var base = expand('~/.vim/pack/plugin')
+  var base = expand('~/.vim/pack/git_plugins')
   mkdir(base .. '/start', 'p')
   mkdir(base .. '/opt', 'p')
 
@@ -92,7 +92,6 @@ g:airline_theme = 'base16_grayscale'
 g:netrw_banner = 0
 g:netrw_liststyle = 3
 g:netrw_preview = 1
-g:magit_update_mode = 'fast'
 g:airline#extensions#whitespace#enabled = 0
 
 nnoremap <C-1> 1gt <CR>
@@ -100,22 +99,45 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
+nnoremap lh <ScriptCmd>Asu()<CR>
+nnoremap <F2> :w<CR>
+nnoremap <F3> <ScriptCmd> ConsolePrint()<CR>
+nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
+
 inoremap jj <ESC>
 inoremap jk <CR>
-nnoremap <F2> :w<CR>
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
-#nnoremap ZZ :q<CR>
-#nnoremap Zz :q!<CR>
-#nnoremap W :w<CR>
 
+
+def Asu()
+  source /home/noodle/apps/git/dotfilesconfigs/vim/hjkl.vim
+enddef
+
+def ConsolePrint()
+  write
+
+  if &filetype == 'python'
+    bel term python %
+  elseif &filetype == 'ruby'
+    const firstline = getline(1)
+    if firstline[: 1] == '##'
+      bel term ++shell ruby %
+    else
+      bel term ++shell bundle exec ruby %
+    endif
+  elseif &filetype == 'typescript'
+    bel term ++shell npx ts-node %
+  elseif &filetype == 'javascript'
+    bel term ++shell node %
+  endif
+enddef
 
 if exists('$JANCOK')
   packadd vim-lsp
   packadd vim-lsp-settings
 
   setlocal omnifunc=lsp#complete
-  #setlocal signcolumn=yes
   if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
   nmap <buffer> ga <plug>(lsp-code-action-float)
   nmap <buffer> gs <plug>(lsp-document-symbol-search)
@@ -132,17 +154,4 @@ if exists('$JANCOK')
   #nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
   #nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
   inoremap <buffer> <C-x><C-x> <C-x><C-o>
-
-  #let g:lsp_format_sync_timeout = 1000
-  #autocmd! BufWritePre *.ts,*.go call execute('LspDocumentFormatSync')
-  #autocmd BufWritePre *.ts,*.tsx :silent! execute '%!prettier --stdin-filepath %'
-
-  # refer to doc to add more commands
 endif
-
-
-def Asu()
-  source /home/noodle/apps/git/dotfilesconfigs/vim/hjkl.vim
-enddef
-
-nnoremap lh <ScriptCmd>Asu()<CR>
