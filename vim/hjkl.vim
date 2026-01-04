@@ -249,3 +249,27 @@ function! IncrementalSearchFilterResult(id, key)
 endfunction
 
 "===============================================================================
+
+function! RandomBuffer()
+  let current_buf = bufnr('%')
+  only
+  let buffers = filter(range(1, bufnr('$')), 'buflisted(v:val) && v:val != current_buf')
+  let counter = 1
+  while !empty(buffers)
+    let idx = rand() % len(buffers)
+    let buf = buffers[idx]
+
+    execute 'vert sb ' . buf
+    if counter == 2
+      execute 'wincmd J'
+    endif
+    let counter += 1
+
+    call remove(buffers, idx)
+  endwhile
+  wincmd w
+endfunction
+
+noremap Q :call RandomBuffer()<CR>
+
+"===============================================================================

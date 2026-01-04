@@ -87,6 +87,8 @@ set nowritebackup
 set noswapfile
 set shell=bash\ -l
 set signcolumn=no
+set splitright
+set splitbelow
 
 g:airline_theme = 'base16_grayscale'
 g:netrw_banner = 0
