@@ -6,6 +6,7 @@ def SetupPlugins(): void
       'https://github.com/vim-airline/vim-airline',
       'https://github.com/vim-airline/vim-airline-themes',
       'https://github.com/Jorengarenar/vim-darkness',
+      'https://github.com/mcchrish/nnn.vim',
     ],
     opt: [
       'https://github.com/prabirshrestha/vim-lsp',
@@ -85,10 +86,11 @@ set ts=2 sw=2 expandtab
 set nobackup
 set nowritebackup
 set noswapfile
-set shell=bash\ -l
+set shell=/bin/bash
 set signcolumn=no
 set splitright
 set splitbelow
+set hidden
 
 g:airline_theme = 'base16_grayscale'
 g:netrw_banner = 0
