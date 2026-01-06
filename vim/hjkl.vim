@@ -51,6 +51,8 @@ endfunction
 
 function! HJKLcallback(id, key)
   noremap hl :call HJKLmenu()<CR>
+  noremap <Space> :call IncrementalSearch()<CR>
+  noremap <Tab> :
 endfunction
 
 "===============================================================================
@@ -155,6 +157,8 @@ function! IncrementalSearch()
   echo "IncrementalSearch"
   normal! 0
   :unmap hl
+  :unmap <Space>
+  :unmap <Tab>
   let s:fuzzy_search = popup_create("$ j? k? @_@", {
         \ 'border': [],
         \ 'filter': 'IncrementalSearchFilter',
@@ -243,7 +247,7 @@ function! IncrementalSearchFilterResult(id, key)
   return1
 endfunction
 
-noremap <F1> :call IncrementalSearch()<CR>
+noremap <Space> :call IncrementalSearch()<CR>
 
 "===============================================================================
 
@@ -273,5 +277,18 @@ function! RandomBuffer()
 endfunction
 
 noremap Q :call RandomBuffer()<CR>
+
+"===============================================================================
+
+let s:isCaps = v:true
+
+function! CapsToggle()
+  call system(s:isCaps
+        \ ? 'setxkbmap -option caps:escape'
+        \ : 'setxkbmap -option')
+  let s:isCaps = !s:isCaps
+endfunction
+
+noremap <F1> :call CapsToggle()<CR>
 
 "===============================================================================

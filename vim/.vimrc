@@ -106,7 +106,7 @@ nnoremap <C-l> <C-w>l
 nnoremap <F2> :w<CR>
 nnoremap <F3> <ScriptCmd> ConsolePrint()<CR>
 nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
-nnoremap <BS> :
+nnoremap <Tab> :
 
 inoremap jj <ESC>
 #inoremap jk <CR>
