@@ -29,9 +29,6 @@ function! HJKLmenu()
         \ })
 endfunction
 
-noremap hl :call HJKLmenu()<CR>
-inoremap hl <ESC>:call HJKLmenu()<CR>
-
 function! HJKLfilter(id, key)
   if a:key ==# " "
     call popup_close(a:id)
@@ -45,7 +42,7 @@ function! HJKLfilter(id, key)
     call popup_close(a:id)
     call FileMenu()
   elseif a:key == "l"
-    echo 4
+    call CapsToggle()
   endif
   return 1
 endfunction
@@ -61,6 +58,7 @@ endfunction
 function! NavMenu()
   echo "NavMenu"
   :unmap hl
+  :unmap <Space>
   let s:nav_menu = popup_create("} j k {", {
         \ 'border': [],
         \ 'filter': 'NavMenuFilter',
@@ -192,7 +190,7 @@ function! IncrementalSearchFilter(id, key)
     let s:direction_reverse = '/'
     call popup_settext(a:id, s:search_direction)
   elseif a:key == "l"
-    echo 4
+    echo 6
   endif
   return 1
 endfunction
@@ -248,8 +246,6 @@ function! IncrementalSearchFilterResult(id, key)
   return1
 endfunction
 
-noremap <Space> :call IncrementalSearch()<CR>
-
 "===============================================================================
 
 function! RandomBuffer()
@@ -277,8 +273,6 @@ function! RandomBuffer()
   wincmd w
 endfunction
 
-noremap Q :call RandomBuffer()<CR>
-
 "===============================================================================
 
 let s:isCaps = v:true
@@ -288,10 +282,90 @@ function! CapsToggle()
         \ ? 'setxkbmap -option caps:escape'
         \ : 'setxkbmap -option')
   let s:isCaps = !s:isCaps
+  echo s:isCaps
 endfunction
 
-noremap <F1> :call CapsToggle()<CR>
 autocmd VimEnter * call system('setxkbmap -option caps:escape')
 autocmd VimLeave * call system('setxkbmap -option')
+
+"===============================================================================
+
+function! ConsolePrint()
+
+  exec 'w'
+
+  if &filetype == 'python'
+    exec 'bel term python %'
+    "exec 'bel term ++shell git log --oneline --graph --all --decorate'
+  endif
+
+  if &filetype == 'ruby'
+    "exec 'bel term'
+    if getline(0,1)[0][0:1] == '##'
+      exec 'bel term ++shell ruby %'
+    else
+      exec 'bel term ++shell bundle exec ruby %'
+    endif
+  endif
+
+  if &filetype == 'java'
+    exec 'bel term ++shell javac % && java %:t:r'
+  endif
+
+  if &filetype == 'typescript'
+    "npx ts-node foo.ts
+    exec 'bel term npx ts-node %'
+  endif
+  if &filetype == 'javascript'
+    exec 'bel term node %'
+  endif
+
+  if &filetype == 'c'
+    if getline(1) !~ '^#/\*'
+      call append(0, '#/*')
+      call append(1, 'gcc ' . expand('%') . ' && ./a.out; exit 0; */')
+      call append(2, '')
+      silent! exec 'chmod +x %'
+      return ConsolePrint()
+    endif
+    "exec 'bel term ++shell gcc -o "%:t:r" % && ./%:t:r'
+    "exec 'bel term ++shell gcc -o "%:t:r" -lX11 -lXpm -lXrandr -lm % && ./%:t:r'
+    exec 'bel term ./%'
+  endif
+
+  if &filetype == 'dart'
+    if getline(0,1)[0][0:1] == '//'
+      :bel term bash -c "dart %"
+    else
+      silent exec '!kill -s USR1 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
+      redraw!
+    endif
+    "silent exec '!kill -s USR1 "$(pgrep -f flutter_tools.snapshot\ run)" &> /dev/null'
+    "redraw!
+    ":bel term bash -c "dart %"
+  endif
+endfunction
+
+"===============================================================================
+
+nnoremap hl :call HJKLmenu()<CR>
+nnoremap <Space> :call IncrementalSearch()<CR>
+nnoremap Q :call RandomBuffer()<CR>
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+nnoremap <F1> :NnnPicker<CR>
+nnoremap <F2> :w<CR>
+"nnoremap <F3> <ScriptCmd> ConsolePrint()<CR>
+nnoremap <F3> :call ConsolePrint()<CR>
+nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
+nnoremap <Tab> :
+
+"inoremap jk <CR>
+inoremap hl <ESC>:call HJKLmenu()<CR>
+inoremap jj <ESC>
+inoremap <C-j> <C-n>
+inoremap <C-k> <C-p>
 
 "===============================================================================

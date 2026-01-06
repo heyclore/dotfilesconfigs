@@ -98,40 +98,6 @@ g:netrw_liststyle = 3
 g:netrw_preview = 1
 g:airline#extensions#whitespace#enabled = 0
 
-nnoremap <C-1> 1gt <CR>
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-nnoremap <F2> :w<CR>
-nnoremap <F3> <ScriptCmd> ConsolePrint()<CR>
-nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
-nnoremap <Tab> :
-
-inoremap jj <ESC>
-#inoremap jk <CR>
-inoremap <C-j> <C-n>
-inoremap <C-k> <C-p>
-
-
-def ConsolePrint()
-  write
-
-  if &filetype == 'python'
-    bel term python %
-  elseif &filetype == 'ruby'
-    const firstline = getline(1)
-    if firstline[: 1] == '##'
-      bel term ++shell ruby %
-    else
-      bel term ++shell bundle exec ruby %
-    endif
-  elseif &filetype == 'typescript'
-    bel term ++shell npx ts-node %
-  elseif &filetype == 'javascript'
-    bel term ++shell node %
-  endif
-enddef
 
 if exists('$JANCOK')
   packadd vim-lsp

@@ -76,6 +76,7 @@ export NVM_DIR="$HOME/.nvm"
 
 #export NNN_PLUG=";:preview-tabbed"
 export NNN_FIFO="/tmp/nnn.fifo"
+[ -p "$NNN_FIFO" ] || mkfifo "$NNN_FIFO"
 if [ -f /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh ]; then
   source /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh
 fi
