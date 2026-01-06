@@ -21,6 +21,7 @@ endfunction
 function! HJKLmenu()
   echo "HJKLmenu"
   :unmap hl
+  :unmap <Space>
   let s:hjkl_menu = popup_create("/ jk % @_@", {
         \ 'border': [],
         \ 'filter': 'HJKLfilter',
@@ -52,7 +53,7 @@ endfunction
 function! HJKLcallback(id, key)
   noremap hl :call HJKLmenu()<CR>
   noremap <Space> :call IncrementalSearch()<CR>
-  noremap <Tab> :
+  "noremap <Tab> :
 endfunction
 
 "===============================================================================
@@ -158,7 +159,7 @@ function! IncrementalSearch()
   normal! 0
   :unmap hl
   :unmap <Space>
-  :unmap <Tab>
+  ":unmap <Tab>
   let s:fuzzy_search = popup_create("$ j? k? @_@", {
         \ 'border': [],
         \ 'filter': 'IncrementalSearchFilter',
@@ -290,5 +291,7 @@ function! CapsToggle()
 endfunction
 
 noremap <F1> :call CapsToggle()<CR>
+autocmd VimEnter * call system('setxkbmap -option caps:escape')
+autocmd VimLeave * call system('setxkbmap -option')
 
 "===============================================================================
