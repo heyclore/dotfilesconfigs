@@ -103,20 +103,16 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
-nnoremap lh <ScriptCmd>Asu()<CR>
 nnoremap <F2> :w<CR>
 nnoremap <F3> <ScriptCmd> ConsolePrint()<CR>
 nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
+nnoremap <BS> :
 
 inoremap jj <ESC>
-inoremap jk <CR>
+#inoremap jk <CR>
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
 
-
-def Asu()
-  source /home/noodle/apps/git/dotfilesconfigs/vim/hjkl.vim
-enddef
 
 def ConsolePrint()
   write
@@ -159,3 +155,5 @@ if exists('$JANCOK')
   #nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
   inoremap <buffer> <C-x><C-x> <C-x><C-o>
 endif
+
+source /home/noodle/apps/git/dotfilesconfigs/vim/hjkl.vim

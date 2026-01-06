@@ -21,7 +21,6 @@ endfunction
 function! HJKLmenu()
   echo "HJKLmenu"
   :unmap hl
-  :unmap lh
   let s:hjkl_menu = popup_create("/ jk % @_@", {
         \ 'border': [],
         \ 'filter': 'HJKLfilter',
@@ -52,7 +51,6 @@ endfunction
 
 function! HJKLcallback(id, key)
   noremap hl :call HJKLmenu()<CR>
-  noremap lh :call Asu()<CR>
 endfunction
 
 "===============================================================================
@@ -60,7 +58,6 @@ endfunction
 function! NavMenu()
   echo "NavMenu"
   :unmap hl
-  :unmap lh
   let s:nav_menu = popup_create("} j k {", {
         \ 'border': [],
         \ 'filter': 'NavMenuFilter',
@@ -120,7 +117,6 @@ let s:has_prettier = executable('prettier')
 function! FileMenu()
   echo "FileMenu"
   :unmap hl
-  :unmap lh
   let s:file_menu = popup_create("q w q! gG", {
         \ 'border': [],
         \ 'filter': 'FileMenuFilter',
@@ -159,7 +155,6 @@ function! IncrementalSearch()
   echo "IncrementalSearch"
   normal! 0
   :unmap hl
-  :unmap lh
   let s:fuzzy_search = popup_create("$ j? k? @_@", {
         \ 'border': [],
         \ 'filter': 'IncrementalSearchFilter',
@@ -248,25 +243,32 @@ function! IncrementalSearchFilterResult(id, key)
   return1
 endfunction
 
+noremap <F1> :call IncrementalSearch()<CR>
+
 "===============================================================================
 
 function! RandomBuffer()
-  let current_buf = bufnr('%')
-  only
-  let buffers = filter(range(1, bufnr('$')), 'buflisted(v:val) && v:val != current_buf')
-  let counter = 1
-  while !empty(buffers)
-    let idx = rand() % len(buffers)
-    let buf = buffers[idx]
+  let visible_buf = []
+  for x in split(execute('ls'), '\n')
+    let y =  split(x, '')
+    if match(y[1], '%') >= 0
+      continue
+    elseif y[1] == 'h'
+      execute 'bdelete!' y[0]
+    else
+      call add(visible_buf, str2nr(y[0]))
+    endif
+  endfor
 
-    execute 'vert sb ' . buf
+  only
+  let counter = 1
+  for x in visible_buf
+    execute 'vert sb ' . x
     if counter == 2
       execute 'wincmd J'
     endif
     let counter += 1
-
-    call remove(buffers, idx)
-  endwhile
+  endfor
   wincmd w
 endfunction
 
