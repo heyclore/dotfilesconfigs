@@ -381,14 +381,15 @@ nnoremap <F1> :NnnPicker<CR>
 nnoremap <F2> :w<CR>
 nnoremap <F3> :call ConsolePrint()<CR>
 nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
-nnoremap <Tab> :
+nnoremap <Tab> :NnnPicker<CR>
+nnoremap <Esc><Esc> :
 
 "inoremap jk <CR>
 inoremap hl <ESC>:call HJKLmenu()<CR>
 inoremap jj <ESC>
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
-inoremap <F1> <ESC>:NnnPicker<CR>
+"inoremap <F1> <ESC>:NnnPicker<CR>
 inoremap <F2> <ESC>:w<CR>
 inoremap <F3> <ESC>:call ConsolePrint()<CR>
 
