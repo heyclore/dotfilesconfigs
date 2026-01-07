@@ -21,7 +21,6 @@ endfunction
 function! HJKLmenu()
   echo "HJKLmenu"
   :unmap hl
-  :unmap <Space>
   let s:hjkl_menu = popup_create("/ jk % @_@", {
         \ 'border': [],
         \ 'filter': 'HJKLfilter',
@@ -49,8 +48,6 @@ endfunction
 
 function! HJKLcallback(id, key)
   noremap hl :call HJKLmenu()<CR>
-  noremap <Space> :call IncrementalSearch()<CR>
-  "noremap <Tab> :
 endfunction
 
 "===============================================================================
@@ -58,7 +55,6 @@ endfunction
 function! NavMenu()
   echo "NavMenu"
   :unmap hl
-  :unmap <Space>
   let s:nav_menu = popup_create("} j k {", {
         \ 'border': [],
         \ 'filter': 'NavMenuFilter',
@@ -155,13 +151,9 @@ endfunction
 function! IncrementalSearch()
   echo "IncrementalSearch"
   normal! 0
-  :unmap hl
-  :unmap <Space>
-  ":unmap <Tab>
   let s:fuzzy_search = popup_create("$ j? k? @_@", {
         \ 'border': [],
         \ 'filter': 'IncrementalSearchFilter',
-        \ 'callback': 'HJKLcallback'
         \ })
 endfunction
 
@@ -370,19 +362,17 @@ endfunction
 "===============================================================================
 
 nnoremap hl :call HJKLmenu()<CR>
-nnoremap <Space> :call IncrementalSearch()<CR>
-nnoremap W :call RandomBuffer()<CR>
-nnoremap Q :call CloseBuffersSmart()<CR>
+nnoremap <Tab><Tab> :NnnPicker<CR>
+nnoremap <F1> :call CloseBuffersSmart()<CR>
+nnoremap <F2> :w<CR>
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
-nnoremap <F1> :NnnPicker<CR>
-nnoremap <F2> :w<CR>
 nnoremap <F3> :call ConsolePrint()<CR>
 nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
-nnoremap <Tab> :NnnPicker<CR>
 nnoremap <Esc><Esc> :
+"nnoremap W :call RandomBuffer()<CR>
 
 "inoremap jk <CR>
 inoremap hl <ESC>:call HJKLmenu()<CR>

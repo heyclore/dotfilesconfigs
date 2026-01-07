@@ -74,7 +74,7 @@ setlocal autoread
 set number
 set relativenumber
 set listchars=eol:¶,space:·
-set cursorcolumn
+#set cursorcolumn
 set cursorline
 set colorcolumn=80
 set mouse=a
