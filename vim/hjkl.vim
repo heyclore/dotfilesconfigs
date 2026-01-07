@@ -285,8 +285,29 @@ function! CapsToggle()
   echo s:isCaps
 endfunction
 
-autocmd VimEnter * call system('setxkbmap -option caps:escape')
-autocmd VimLeave * call system('setxkbmap -option')
+"===============================================================================
+
+function! CloseBuffersSmart()
+  let l:has_modified = 0
+
+  for buf in range(1, bufnr('$'))
+    if bufexists(buf) && buflisted(buf) && getbufvar(buf, '&modified')
+      let l:has_modified = 1
+      break
+    endif
+  endfor
+
+  if !l:has_modified
+    qa
+    return
+  endif
+
+  for buf in range(1, bufnr('$'))
+    if bufexists(buf) && buflisted(buf) && !getbufvar(buf, '&modified')
+      execute 'bdelete' buf
+    endif
+  endfor
+endfunction
 
 "===============================================================================
 
@@ -350,14 +371,14 @@ endfunction
 
 nnoremap hl :call HJKLmenu()<CR>
 nnoremap <Space> :call IncrementalSearch()<CR>
-nnoremap Q :call RandomBuffer()<CR>
+nnoremap W :call RandomBuffer()<CR>
+nnoremap Q :call CloseBuffersSmart()<CR>
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 nnoremap <F1> :NnnPicker<CR>
 nnoremap <F2> :w<CR>
-"nnoremap <F3> <ScriptCmd> ConsolePrint()<CR>
 nnoremap <F3> :call ConsolePrint()<CR>
 nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
 nnoremap <Tab> :
@@ -367,5 +388,11 @@ inoremap hl <ESC>:call HJKLmenu()<CR>
 inoremap jj <ESC>
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
+inoremap <F1> <ESC>:NnnPicker<CR>
+inoremap <F2> <ESC>:w<CR>
+inoremap <F3> <ESC>:call ConsolePrint()<CR>
+
+autocmd VimEnter * call system('setxkbmap -option caps:escape')
+autocmd VimLeave * call system('setxkbmap -option')
 
 "===============================================================================
