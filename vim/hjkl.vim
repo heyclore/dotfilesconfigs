@@ -365,7 +365,7 @@ nnoremap hl :call HJKLmenu()<CR>
 nnoremap <Tab><Tab> :NnnPicker<CR>
 nnoremap <Tab>q :call OpenExplorerByOrientation()<CR>
 nnoremap <F1> :call CloseBuffersSmart()<CR>
-nnoremap <F2> :w<CR>
+nnoremap <F2> <Cmd>w<CR>
 nnoremap <F3> :q!<CR>
 nnoremap <F4> :call ConsolePrint()<CR>
 nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
@@ -373,7 +373,7 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
-nnoremap <Esc><Esc> :
+"nnoremap <Esc><Esc> :
 "nnoremap W :call RandomBuffer()<CR>
 
 "inoremap jk <CR>
@@ -381,28 +381,37 @@ inoremap hl <ESC>:call HJKLmenu()<CR>
 inoremap jj <ESC>
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
-inoremap <F2> <ESC>:w<CR>
+inoremap <F2> <Cmd>w<CR>
 inoremap <F3> <ESC>:call ConsolePrint()<CR>
 
-autocmd VimEnter * call system('setxkbmap -option caps:escape')
-autocmd VimLeave * call system('setxkbmap -option')
+"autocmd VimEnter * call system('setxkbmap -option caps:escape')
+"autocmd VimLeave * call system('setxkbmap -option')
 
 "===============================================================================
+let s:toggleSplit = v:true
+let s:lastBuffer = 0
+
 function! OpenExplorerByOrientation()
-  let orientation =  winwidth(0) * 8 > winheight(0) * 14
-  if bufname('%') != 'NetrwTreeListing'
-    if orientation
-      execute 'Vexplore'
-    else
-      execute 'Sexplore'
-    endif
+  let lBuffer = bufnr('#')
+  if lBuffer == -1
     return
   endif
-  if orientation
-    close
-    execute 'Vexplore'
+
+  if s:lastBuffer != bufnr('%')
+    " Open last buffer in a horizontal split
+    execute 'split | buffer ' . lBuffer
+    let s:lastBuffer = lBuffer
   else
-    close
-    execute 'Sexplore'
+    " Toggle split orientation if buffer is already open
+    if winnr('$') > 1
+      close
+    endif
+    if s:toggleSplit
+      execute 'split | buffer ' . s:lastBuffer
+    else
+      execute 'vsplit | buffer ' . s:lastBuffer
+    endif
   endif
+  let s:toggleSplit = !s:toggleSplit
 endfunction
+
