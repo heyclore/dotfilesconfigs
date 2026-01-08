@@ -3,8 +3,6 @@ vim9script
 def SetupPlugins(): void
   var plugins = {
     start: [
-      'https://github.com/vim-airline/vim-airline',
-      'https://github.com/vim-airline/vim-airline-themes',
       'https://github.com/Jorengarenar/vim-darkness',
       'https://github.com/mcchrish/nnn.vim',
     ],
@@ -91,13 +89,55 @@ set signcolumn=no
 set splitright
 set splitbelow
 set hidden
+set laststatus=2
 
-g:airline_theme = 'base16_grayscale'
 g:netrw_banner = 0
 g:netrw_liststyle = 3
 g:netrw_preview = 1
-g:airline#extensions#whitespace#enabled = 0
 
+####################################################################
+
+def g:GetMode(): string
+  var m = mode()
+  var mode_map = {
+    "n":      "  NORMAL ",
+    "i":      "  INSERT ",
+    "v":      "  VISUAL ",
+    "V":      "  V-LINE ",
+    "\<C-V>": "  V-BLOCK ",
+    "c":      "  COMMAND ",
+    "R":      "  REPLACE ",
+    "s":      "  SELECT ",
+    "t":      "  TERMINAL "
+  }
+  return get(mode_map, m, m)
+enddef
+
+var parts = [
+  "%#PmenuSel#",                # Highlight: Mode block
+  "%{g:GetMode()}",             # The Mode text (from your global function)
+  "%*",                         # Reset Highlight
+  "%#StatusLineNC#",            # Highlight: Mode block
+  " %f",                        # File path
+  "%m",                         # Modified flag [+]
+  "%r",                         # Read-only flag [RO]
+  "%h",                         # Help buffer flag [help]
+  "%w",                         # Preview window flag [Preview]
+  "%=",                         # --- Separation Point (Left vs Right) ---
+  "%#StatusLineNC#",            # Highlight: Mode block
+  " %y ",                       # Filetype [vim]
+  "%#PmenuSel#",                # Highlight: Mode block
+  " %{&fileencoding}",          # Encoding (utf-8)
+  "[%{&fileformat}] ",          # Format [unix]
+  "%#Search#",                  # Highlight: Position block
+  " %l/%L ",                    # Line / Total Lines
+  "col:%c ",                    # Column number
+  "%P ",                        # Percentage through file
+]
+
+&statusline = join(parts, '')
+
+####################################################################
 
 if exists('$JANCOK')
   packadd vim-lsp
