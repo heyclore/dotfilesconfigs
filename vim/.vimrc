@@ -103,23 +103,40 @@ if exists('$JANCOK')
   packadd vim-lsp
   packadd vim-lsp-settings
 
-  setlocal omnifunc=lsp#complete
-  if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-  nmap <buffer> ga <plug>(lsp-code-action-float)
-  nmap <buffer> gs <plug>(lsp-document-symbol-search)
-  nmap <buffer> [\ <plug>(lsp-previous-diagnostic)
-  nmap <buffer> ]\ <plug>(lsp-next-diagnostic)
-  nmap <buffer> K <plug>(lsp-hover)
+  #setlocal omnifunc=lsp#complete
+  #if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
+  #nmap <buffer> ga <plug>(lsp-code-action-float)
+  #nmap <buffer> gs <plug>(lsp-document-symbol-search)
+  #nmap <buffer> [\ <plug>(lsp-previous-diagnostic)
+  #nmap <buffer> ]\ <plug>(lsp-next-diagnostic)
+  #nmap <buffer> K <plug>(lsp-hover)
   #nmap <buffer> gd <plug>(lsp-definition)
   #nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
   #nmap <buffer> gr <plug>(lsp-references)
   #nmap <buffer> gi <plug>(lsp-implementation)
   #nmap <buffer> gt <plug>(lsp-type-definition)
-  nnoremap <buffer> gt :split<CR><plug>(lsp-type-definition)
+  #nnoremap <buffer> gt :split<CR><plug>(lsp-type-definition)
   #nmap <buffer> <leader>rn <plug>(lsp-rename)
   #nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
   #nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
-  inoremap <buffer> <C-x><C-x> <C-x><C-o>
+  #inoremap <buffer> <C-x><C-x> <C-x><C-o>
+
+  augroup OptionalLSP
+    autocmd!
+    autocmd FileType * {
+      setlocal omnifunc=lsp#complete
+      if exists('+tagfunc')
+        setlocal tagfunc=lsp#tagfunc
+      endif
+      nnoremap <buffer> ga <plug>(lsp-code-action-float)
+      nnoremap <buffer> gs <plug>(lsp-document-symbol-search)
+      nnoremap <buffer> [\ <plug>(lsp-previous-diagnostic)
+      nnoremap <buffer> ]\ <plug>(lsp-next-diagnostic)
+      nnoremap <buffer> K <plug>(lsp-hover)
+      nnoremap <buffer> gt :split<CR><plug>(lsp-type-definition)
+      inoremap <buffer> <C-x><C-x> <C-x><C-o>
+    }
+  augroup END
 endif
 
 source /home/noodle/apps/git/dotfilesconfigs/vim/hjkl.vim

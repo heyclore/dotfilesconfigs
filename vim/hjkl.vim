@@ -363,7 +363,7 @@ endfunction
 
 nnoremap hl :call HJKLmenu()<CR>
 nnoremap <Tab><Tab> :NnnPicker<CR>
-nnoremap <Tab>q :call OpenExplorerByOrientation()<CR>
+nnoremap <Tab>q :call OpenAlternateBufferWithSmartSplit()<CR>
 nnoremap <F1> :call CloseBuffersSmart()<CR>
 nnoremap <F2> <Cmd>w<CR>
 nnoremap <F3> :q!<CR>
@@ -388,30 +388,35 @@ inoremap <F3> <ESC>:call ConsolePrint()<CR>
 "autocmd VimLeave * call system('setxkbmap -option')
 
 "===============================================================================
-let s:toggleSplit = v:true
-let s:lastBuffer = 0
+let s:use_vertical_split = v:true
+let s:last_opened_bufnr = 0
 
-function! OpenExplorerByOrientation()
-  let lBuffer = bufnr('#')
-  if lBuffer == -1
+function! OpenAlternateBufferWithSmartSplit() abort
+  let l:alt_bufnr = bufnr('#')
+  if l:alt_bufnr == -1
     return
   endif
 
-  if s:lastBuffer != bufnr('%')
-    " Open last buffer in a horizontal split
-    execute 'split | buffer ' . lBuffer
-    let s:lastBuffer = lBuffer
+  if s:last_opened_bufnr != bufnr('%')
+    if winwidth(0) * 8 > winheight(0) * 14
+      execute 'vsplit | buffer ' . l:alt_bufnr
+      let s:use_vertical_split = v:false
+    else
+      execute 'split | buffer ' . l:alt_bufnr
+    endif
+    let s:last_opened_bufnr = l:alt_bufnr
   else
-    " Toggle split orientation if buffer is already open
     if winnr('$') > 1
       close
     endif
-    if s:toggleSplit
-      execute 'split | buffer ' . s:lastBuffer
+
+    if s:use_vertical_split
+      execute 'vsplit | buffer ' . s:last_opened_bufnr
     else
-      execute 'vsplit | buffer ' . s:lastBuffer
+      execute 'split | buffer ' . s:last_opened_bufnr
     endif
+    let s:use_vertical_split = !s:use_vertical_split
   endif
-  let s:toggleSplit = !s:toggleSplit
+
 endfunction
 
