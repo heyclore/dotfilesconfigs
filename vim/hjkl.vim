@@ -363,14 +363,16 @@ endfunction
 
 nnoremap hl :call HJKLmenu()<CR>
 nnoremap <Tab><Tab> :NnnPicker<CR>
+nnoremap <Tab>q :call OpenExplorerByOrientation()<CR>
 nnoremap <F1> :call CloseBuffersSmart()<CR>
 nnoremap <F2> :w<CR>
+nnoremap <F3> :q!<CR>
+nnoremap <F4> :call ConsolePrint()<CR>
+nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
-nnoremap <F3> :call ConsolePrint()<CR>
-nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
 nnoremap <Esc><Esc> :
 "nnoremap W :call RandomBuffer()<CR>
 
@@ -379,7 +381,6 @@ inoremap hl <ESC>:call HJKLmenu()<CR>
 inoremap jj <ESC>
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
-"inoremap <F1> <ESC>:NnnPicker<CR>
 inoremap <F2> <ESC>:w<CR>
 inoremap <F3> <ESC>:call ConsolePrint()<CR>
 
@@ -387,3 +388,21 @@ autocmd VimEnter * call system('setxkbmap -option caps:escape')
 autocmd VimLeave * call system('setxkbmap -option')
 
 "===============================================================================
+function! OpenExplorerByOrientation()
+  let orientation =  winwidth(0) * 8 > winheight(0) * 14
+  if bufname('%') != 'NetrwTreeListing'
+    if orientation
+      execute 'Vexplore'
+    else
+      execute 'Sexplore'
+    endif
+    return
+  endif
+  if orientation
+    close
+    execute 'Vexplore'
+  else
+    close
+    execute 'Sexplore'
+  endif
+endfunction
