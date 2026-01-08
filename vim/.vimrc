@@ -1,5 +1,16 @@
 vim9script
 
+g:netrw_banner = 0
+g:netrw_liststyle = 3
+g:netrw_dirhistmax = 0
+g:netrw_hide = 1
+g:netrw_keepdir = 0
+g:netrw_disable_netrwPlugin = 1
+
+g:nnn#set_default_mappings = 0
+
+####################################################################
+
 def SetupPlugins(): void
   var plugins = {
     start: [
@@ -91,51 +102,36 @@ set splitbelow
 set hidden
 set laststatus=2
 
-g:netrw_banner = 0
-g:netrw_liststyle = 3
-g:netrw_preview = 1
-
 ####################################################################
 
+const mode_map = {
+  n:  '  NORMAL ',
+  i:  '  INSERT ',
+  v:  '  VISUAL ',
+  V:  '  V-LINE ',
+  "\<C-V>": '  V-BLOCK ',
+  c:  '  COMMAND ',
+  R:  '  REPLACE ',
+  s:  '  SELECT ',
+  t:  '  TERMINAL ',
+}
+
 def g:GetMode(): string
-  var m = mode()
-  var mode_map = {
-    "n":      "  NORMAL ",
-    "i":      "  INSERT ",
-    "v":      "  VISUAL ",
-    "V":      "  V-LINE ",
-    "\<C-V>": "  V-BLOCK ",
-    "c":      "  COMMAND ",
-    "R":      "  REPLACE ",
-    "s":      "  SELECT ",
-    "t":      "  TERMINAL "
-  }
-  return get(mode_map, m, m)
+  return get(mode_map, mode(), mode())
 enddef
 
-var parts = [
-  "%#PmenuSel#",                # Highlight: Mode block
-  "%{g:GetMode()}",             # The Mode text (from your global function)
-  "%*",                         # Reset Highlight
-  "%#StatusLineNC#",            # Highlight: Mode block
-  " %f",                        # File path
-  "%m",                         # Modified flag [+]
-  "%r",                         # Read-only flag [RO]
-  "%h",                         # Help buffer flag [help]
-  "%w",                         # Preview window flag [Preview]
-  "%=",                         # --- Separation Point (Left vs Right) ---
-  "%#StatusLineNC#",            # Highlight: Mode block
-  " %y ",                       # Filetype [vim]
-  "%#PmenuSel#",                # Highlight: Mode block
-  " %{&fileencoding}",          # Encoding (utf-8)
-  "[%{&fileformat}] ",          # Format [unix]
-  "%#Search#",                  # Highlight: Position block
-  " %l/%L ",                    # Line / Total Lines
-  "col:%c ",                    # Column number
-  "%P ",                        # Percentage through file
-]
-
-&statusline = join(parts, '')
+set statusline=
+set statusline+=%#PmenuSel#
+set statusline+=%{%g:GetMode()%}
+set statusline+=%#StatusLine#
+set statusline+=\ %f%m%r%h%w
+set statusline+=%=
+set statusline+=%#StatusLineNC#
+set statusline+=\ %y
+set statusline+=%#PmenuSel#
+set statusline+=\ %{(&fenc!=''?&fenc:&enc)}[%{&ff}]
+set statusline+=%#StatusLine#
+set statusline+=\ %l/%L\ col:%c\ %P
 
 ####################################################################
 
