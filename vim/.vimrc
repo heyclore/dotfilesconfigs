@@ -6,8 +6,35 @@ g:netrw_dirhistmax = 0
 g:netrw_hide = 1
 g:netrw_keepdir = 0
 g:netrw_disable_netrwPlugin = 1
-
 g:nnn#set_default_mappings = 0
+
+filetype plugin indent on
+syntax on
+colorscheme darkness
+hi Normal guibg=NONE ctermbg=NONE
+
+set autoread
+set number
+set relativenumber
+set wildmenu
+set signcolumn=no
+set noshowmode
+set splitright
+set splitbelow
+set hidden
+set mouse=a
+set ts=2 sw=2 expandtab
+set shell=/bin/bash
+set path=.,,
+set completeopt=menuone,noselect
+set laststatus=2
+set nobackup
+set nowritebackup
+set noswapfile
+set lazyredraw
+set ttyfast
+set updatetime=300
+set cursorline
 
 ####################################################################
 
@@ -73,35 +100,6 @@ def SetupPlugins(): void
 enddef
 command! LL call SetupPlugins()
 
-
-filetype plugin indent on
-hi Normal guibg=NONE ctermbg=NONE
-syntax enable
-colorscheme darkness
-
-setlocal autoread
-set number
-set relativenumber
-set listchars=eol:¶,space:·
-#set cursorcolumn
-set cursorline
-set colorcolumn=80
-set mouse=a
-set noshowmode
-set path+=**
-set wildmenu
-set completeopt-=preview
-set ts=2 sw=2 expandtab
-set nobackup
-set nowritebackup
-set noswapfile
-set shell=/bin/bash
-set signcolumn=no
-set splitright
-set splitbelow
-set hidden
-set laststatus=2
-
 ####################################################################
 
 const mode_map = {
@@ -138,24 +136,6 @@ set statusline+=\ %l/%L\ col:%c\ %P
 if exists('$JANCOK')
   packadd vim-lsp
   packadd vim-lsp-settings
-
-  #setlocal omnifunc=lsp#complete
-  #if exists('+tagfunc') | setlocal tagfunc=lsp#tagfunc | endif
-  #nmap <buffer> ga <plug>(lsp-code-action-float)
-  #nmap <buffer> gs <plug>(lsp-document-symbol-search)
-  #nmap <buffer> [\ <plug>(lsp-previous-diagnostic)
-  #nmap <buffer> ]\ <plug>(lsp-next-diagnostic)
-  #nmap <buffer> K <plug>(lsp-hover)
-  #nmap <buffer> gd <plug>(lsp-definition)
-  #nmap <buffer> gS <plug>(lsp-workspace-symbol-search)
-  #nmap <buffer> gr <plug>(lsp-references)
-  #nmap <buffer> gi <plug>(lsp-implementation)
-  #nmap <buffer> gt <plug>(lsp-type-definition)
-  #nnoremap <buffer> gt :split<CR><plug>(lsp-type-definition)
-  #nmap <buffer> <leader>rn <plug>(lsp-rename)
-  #nnoremap <buffer> <expr><c-f> lsp#scroll(+4)
-  #nnoremap <buffer> <expr><c-d> lsp#scroll(-4)
-  #inoremap <buffer> <C-x><C-x> <C-x><C-o>
 
   augroup OptionalLSP
     autocmd!
