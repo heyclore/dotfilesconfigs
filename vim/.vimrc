@@ -10,7 +10,7 @@ g:nnn#set_default_mappings = 0
 
 filetype plugin indent on
 syntax on
-colorscheme darkness
+colorscheme colorless
 hi Normal guibg=NONE ctermbg=NONE
 
 set autoread
@@ -41,8 +41,8 @@ set cursorline
 def SetupPlugins(): void
   var plugins = {
     start: [
-      'https://github.com/Jorengarenar/vim-darkness',
       'https://github.com/mcchrish/nnn.vim',
+      'https://github.com/heyclore/colorless.vim',
     ],
     opt: [
       'https://github.com/prabirshrestha/vim-lsp',
@@ -99,37 +99,6 @@ def SetupPlugins(): void
   echo 'Plugins synced!'
 enddef
 command! LL call SetupPlugins()
-
-####################################################################
-
-const mode_map = {
-  n:  '  NORMAL ',
-  i:  '  INSERT ',
-  v:  '  VISUAL ',
-  V:  '  V-LINE ',
-  "\<C-V>": '  V-BLOCK ',
-  c:  '  COMMAND ',
-  R:  '  REPLACE ',
-  s:  '  SELECT ',
-  t:  '  TERMINAL ',
-}
-
-def g:GetMode(): string
-  return get(mode_map, mode(), mode())
-enddef
-
-set statusline=
-set statusline+=%#PmenuSel#
-set statusline+=%{%g:GetMode()%}
-set statusline+=%#StatusLine#
-set statusline+=\ %f%m%r%h%w
-set statusline+=%=
-set statusline+=%#StatusLineNC#
-set statusline+=\ %y
-set statusline+=%#PmenuSel#
-set statusline+=\ %{(&fenc!=''?&fenc:&enc)}[%{&ff}]
-set statusline+=%#StatusLine#
-set statusline+=\ %l/%L\ col:%c\ %P
 
 ####################################################################
 
