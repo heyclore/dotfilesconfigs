@@ -35,6 +35,8 @@ set lazyredraw
 set ttyfast
 set updatetime=300
 set cursorline
+set ignorecase
+set smartcase
 
 ####################################################################
 
