@@ -10,7 +10,7 @@ g:nnn#set_default_mappings = 0
 
 filetype plugin indent on
 syntax on
-colorscheme colorless
+try | colorscheme colorless | catch | endtry
 hi Normal guibg=NONE ctermbg=NONE
 
 set autoread
@@ -37,6 +37,9 @@ set updatetime=300
 set cursorline
 set ignorecase
 set smartcase
+
+autocmd WinEnter * setlocal cursorline
+autocmd WinLeave * setlocal nocursorline
 
 ####################################################################
 
@@ -121,7 +124,6 @@ if exists('$JANCOK')
       nnoremap <buffer> ]\ <plug>(lsp-next-diagnostic)
       nnoremap <buffer> K <plug>(lsp-hover)
       nnoremap <buffer> gt :split<CR><plug>(lsp-type-definition)
-      inoremap <buffer> <C-x><C-x> <C-x><C-o>
     }
   augroup END
 endif

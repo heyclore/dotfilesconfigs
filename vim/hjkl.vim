@@ -364,6 +364,7 @@ endfunction
 nnoremap hl :call HJKLmenu()<CR>
 nnoremap <Tab><Tab> :NnnPicker<CR>
 nnoremap <Tab>q :call OpenAlternateBufferWithSmartSplit()<CR>
+nnoremap <Home> <C-w>w
 nnoremap <F1> :call CloseBuffersSmart()<CR>
 nnoremap <F2> <Cmd>w<CR>
 nnoremap <F3> :q!<CR>
@@ -379,10 +380,12 @@ nnoremap <C-l> <C-w>l
 "inoremap jk <CR>
 inoremap hl <ESC>:call HJKLmenu()<CR>
 inoremap jj <ESC>
+inoremap <C-h> <C-x><C-o>
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
-inoremap <F2> <Cmd>w<CR>
-inoremap <F3> <ESC>:call ConsolePrint()<CR>
+inoremap <C-l> .
+"inoremap <F2> <Cmd>w<CR>
+"inoremap <F3> <ESC>:call ConsolePrint()<CR>
 
 "autocmd VimEnter * call system('setxkbmap -option caps:escape')
 "autocmd VimLeave * call system('setxkbmap -option')
