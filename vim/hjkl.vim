@@ -384,6 +384,10 @@ inoremap <C-h> <C-x><C-o>
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
 inoremap <C-l> .
+nnoremap <Esc>h :echo "ALT-h"<CR>
+nnoremap <Esc>j :echo "ALT-j"<CR>
+nnoremap <Esc>k :echo "ALT-k"<CR>
+nnoremap <Esc>l :echo "ALT-l"<CR>
 "inoremap <F2> <Cmd>w<CR>
 "inoremap <F3> <ESC>:call ConsolePrint()<CR>
 
