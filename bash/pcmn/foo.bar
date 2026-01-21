@@ -7,7 +7,6 @@ multimedia
 %PACKAGES%
 pcmanfm
 lxappearance
-papirus-icon-theme
 btop
 less
 nnn
@@ -25,3 +24,4 @@ xorg-xhost
 xorg-xkill
 xorg-xprop
 xorg-xsetroot
+mpv
