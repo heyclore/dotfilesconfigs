@@ -37,6 +37,7 @@ set updatetime=300
 set cursorline
 set ignorecase
 set smartcase
+set nowrap
 
 autocmd WinEnter * setlocal cursorline
 autocmd WinLeave * setlocal nocursorline
