@@ -80,7 +80,7 @@ export NVM_DIR="$HOME/.nvm"
 export NNN_BMS="b:/home/noodle/apps/git/dotfilesconfigs;d:$HOME/Downloads"
 export NNN_COLORS="#f3f0070f;7777"
 export NNN_FCOLORS="f3f3f3070000f3f0eeeeeeee"
-export NNN_FIFO="/tmp/nnn.fifo"
+export NNN_FIFO="/tmp/nnn.fifo.$$"
 [ -p "$NNN_FIFO" ] || mkfifo "$NNN_FIFO"
 if [ -f /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh ]; then
   source /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh
