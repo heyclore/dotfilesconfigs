@@ -39,9 +39,6 @@ set ignorecase
 set smartcase
 set nowrap
 
-autocmd WinEnter * setlocal cursorline
-autocmd WinLeave * setlocal nocursorline
-
 ####################################################################
 
 def SetupPlugins(): void
@@ -51,6 +48,7 @@ def SetupPlugins(): void
       'https://github.com/heyclore/colorless.vim',
     ],
     opt: [
+      #'https://github.com/puremourning/vimspector',
       'https://github.com/prabirshrestha/vim-lsp',
       'https://github.com/mattn/vim-lsp-settings',
     ]

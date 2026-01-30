@@ -7,6 +7,12 @@
 set -o vi
 bind '"jj": vi-movement-mode'
 bind -m vi-command '"l": accept-line'
+bind -m vi-insert '"\eOP": beginning-of-line'
+bind -m vi-insert '"\eOQ": end-of-line'
+bind -m vi-insert '"\eOR": kill-word'
+bind -m vi-insert '"]": vi-forward-word'
+bind -m vi-insert '"[": vi-backward-word'
+
 
 #alias ls='ls --color=auto'
 #alias rb='bundle exec ruby'
@@ -69,12 +75,6 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 #[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-#GIMP
-#export PATH="${PATH}:~/winedoews/usr/bin"
-#export LD_LIBRARY_PATH=~/winedoews/usr/lib
-#export BABL_PATH=~/winedoews/usr/lib/babl-0.1
-#export GEGL_PATH=~/winedoews/usr/lib/gegl-0.4/
-
 #export NNN_PLUG=";:preview-tabbed"
 #export NNN_OPTS="H"
 #export NNN_FIFO="/tmp/nnn.fifo.$$"
@@ -85,7 +85,3 @@ export NNN_FCOLORS="f3f3f3070000f3f0eeeeeeee"
 if [ -f /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh ]; then
   source /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh
 fi
-#makepkgp() {
-#  export PATH="$PATH:/home/noodle/containers/compiler/usr/bin"
-#  export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/containers/compiler/usr/lib"
-#}
