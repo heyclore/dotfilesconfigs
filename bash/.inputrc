@@ -1,0 +1,19 @@
+set editing-mode vi
+set show-mode-in-prompt on
+set vi-ins-mode-string "+"
+set vi-cmd-mode-string ":"
+
+set keymap vi-command
+"jj": vi-movement-mode
+"l": accept-line
+"\eOP": "av\C-m"
+
+set keymap vi-insert
+"]": vi-forward-word
+"[": vi-backward-word
+"{": beginning-of-line
+"}": end-of-line
+"jj": accept-line
+"\eOP": "v\C-m"
+"\eOQ": kill-word
+"\e[P": delete-char

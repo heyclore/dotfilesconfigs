@@ -365,9 +365,9 @@ nnoremap hl :call HJKLmenu()<CR>
 nnoremap <Tab><Tab> :EditVifm<CR>
 nnoremap <Tab>q :call OpenAlternateBufferWithSmartSplit()<CR>
 nnoremap <Home> <C-w>w
-nnoremap <F1> :call CloseBuffersSmart()<CR>
+nnoremap <F1> :q!<CR>
 nnoremap <F2> <Cmd>w<CR>
-nnoremap <F3> :q!<CR>
+nnoremap <F3> :call CloseBuffersSmart()<CR>
 nnoremap <F4> :call ConsolePrint()<CR>
 nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
 nnoremap <C-h> <C-w>h

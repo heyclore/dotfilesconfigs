@@ -26,12 +26,14 @@ highlight Link ctermfg=250 ctermbg=-1 cterm=none
 highlight BrokenLink ctermfg=238 ctermbg=11 cterm=none
 
 set nofollowlinks
+set number
+set relativenumber
 
-nnoremap <f4> :cd ~/apps/git/dotfilesconfigs/<cr>
-nnoremap . za
+nnoremap <F1> :q<cr>
+nnoremap <f2> :cd ~/apps/git/dotfilesconfigs/<cr>
+nnoremap <C-H> za
+nnoremap <C-L> :view<CR>
 nnoremap ` :cd ~<CR>
-nnoremap ~ :cd /<CR>
 nnoremap ~ :cd /<CR>
 
 fileviewer *.png,*.jpg,*.jpeg,*.gif,*.webp chafa --size=80x120 --symbols=block --fill=block --polite on %f
-nnoremap <F3> :q<cr>

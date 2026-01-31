@@ -37,6 +37,7 @@ set cursorline
 set ignorecase
 set smartcase
 set nowrap
+set noautochdir
 
 ####################################################################
 
