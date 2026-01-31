@@ -5,9 +5,9 @@ extra
 0.1
 
 %PACKAGES%
+nnn
 btop
 less
-nnn
 nvtop
 tmux
 tree
@@ -22,3 +22,5 @@ xorg-xhost
 xorg-xkill
 xorg-xprop
 xorg-xsetroot
+vifm
+chafa

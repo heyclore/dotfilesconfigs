@@ -1,0 +1,37 @@
+highlight clear
+highlight Win ctermfg=250 ctermbg=0 cterm=none
+highlight OtherWin ctermfg=242 ctermbg=-1 cterm=none
+highlight TopLine ctermfg=238 ctermbg=234 cterm=reverse
+highlight TopLineSel ctermfg=238 ctermbg=238 cterm=bold,reverse
+highlight TabLine ctermfg=248 ctermbg=234 cterm=none
+highlight TabLineSel ctermfg=232 ctermbg=240 cterm=bold
+highlight JobLine ctermfg=6 ctermbg=0 cterm=none
+highlight StatusLine ctermfg=238 ctermbg=248 cterm=bold,reverse
+highlight Border ctermfg=244 ctermbg=238 cterm=none
+highlight CurrLine ctermfg=248 ctermbg=236 cterm=none
+highlight OtherLine ctermfg=244 ctermbg=234 cterm=none
+highlight LineNr ctermfg=236 ctermbg=-1 cterm=none
+highlight Selected ctermfg=0 ctermbg=236 cterm=none
+highlight CmpMismatch ctermfg=250 ctermbg=225 cterm=none
+highlight SuggestBox ctermfg=250 ctermbg=14 cterm=none
+highlight WildMenu ctermfg=250 ctermbg=236 cterm=none
+highlight CmdLine ctermfg=250 ctermbg=0 cterm=none
+highlight ErrorMsg ctermfg=15 ctermbg=1 cterm=none
+highlight Directory ctermfg=244 ctermbg=-1 cterm=none
+highlight Executable ctermfg=244 ctermbg=-1 cterm=none
+highlight Socket ctermfg=244 ctermbg=-1 cterm=none
+highlight Device ctermfg=244 ctermbg=-1 cterm=none
+highlight Fifo ctermfg=250 ctermbg=-1 cterm=none
+highlight Link ctermfg=250 ctermbg=-1 cterm=none
+highlight BrokenLink ctermfg=238 ctermbg=11 cterm=none
+
+set nofollowlinks
+
+nnoremap <f4> :cd ~/apps/git/dotfilesconfigs/<cr>
+nnoremap . za
+nnoremap ` :cd ~<CR>
+nnoremap ~ :cd /<CR>
+nnoremap ~ :cd /<CR>
+
+fileviewer *.png,*.jpg,*.jpeg,*.gif,*.webp chafa --size=80x120 --symbols=block --fill=block --polite on %f
+nnoremap <F3> :q<cr>

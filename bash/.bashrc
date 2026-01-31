@@ -85,3 +85,12 @@ export NNN_FCOLORS="f3f3f3070000f3f0eeeeeeee"
 if [ -f /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh ]; then
   source /home/noodle/apps/sha/nnn/share/nnn/quitcd/quitcd.bash_sh_zsh
 fi
+
+v() {
+    local dst="$(command vifm --choose-dir - "$@")"
+    if [ -z "$dst" ]; then
+        echo 'Directory picking cancelled/failed'
+        return 1
+    fi
+    cd "$dst"
+}

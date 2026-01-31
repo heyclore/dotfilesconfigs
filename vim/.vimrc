@@ -6,7 +6,6 @@ g:netrw_dirhistmax = 0
 g:netrw_hide = 1
 g:netrw_keepdir = 0
 g:netrw_disable_netrwPlugin = 1
-g:nnn#set_default_mappings = 0
 
 filetype plugin indent on
 syntax on
@@ -44,8 +43,9 @@ set nowrap
 def SetupPlugins(): void
   var plugins = {
     start: [
-      'https://github.com/mcchrish/nnn.vim',
+      #'https://github.com/mcchrish/nnn.vim',
       'https://github.com/heyclore/colorless.vim',
+      'https://github.com/vifm/vifm.vim',
     ],
     opt: [
       #'https://github.com/puremourning/vimspector',

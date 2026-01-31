@@ -362,7 +362,7 @@ endfunction
 "===============================================================================
 
 nnoremap hl :call HJKLmenu()<CR>
-nnoremap <Tab><Tab> :NnnPicker<CR>
+nnoremap <Tab><Tab> :EditVifm<CR>
 nnoremap <Tab>q :call OpenAlternateBufferWithSmartSplit()<CR>
 nnoremap <Home> <C-w>w
 nnoremap <F1> :call CloseBuffersSmart()<CR>
