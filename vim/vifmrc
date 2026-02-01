@@ -28,11 +28,13 @@ highlight BrokenLink ctermfg=238 ctermbg=11 cterm=none
 set nofollowlinks
 set number
 set relativenumber
+set notrash
 
 nnoremap <F1> :q<cr>
 nnoremap <f2> :cd ~/apps/git/dotfilesconfigs/<cr>
 nnoremap <C-H> za
 nnoremap <C-L> :view<CR>
+nnoremap q :q<cr>
 nnoremap ` :cd ~<CR>
 nnoremap ~ :cd /<CR>
 
