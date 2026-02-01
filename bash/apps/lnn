@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Target directory
-target_bin_dir="$HOME/apps/bin/"
-target_lib_dir="$HOME/apps/lib/"
+target_bin_dir="/home/noodle/apps/opt/bin/"
+target_lib_dir="/home/noodle/apps/opt/lib/"
 
 # Ensure target directory exists
 #mkdir -p "$target_dir"

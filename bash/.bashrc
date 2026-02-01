@@ -16,8 +16,8 @@ alias ll='export JANCOK=1'
 
 export EDITOR="vim"
 export GEMINI_MODEL="gemini-2.5-flash-lite"
-export PATH="$PATH:$HOME/apps/bin"
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/apps/lib"
+export PATH="$PATH:/home/noodle/apps/opt/bin/"
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/home/noodle/apps/opt/lib/"
 
 export NVM_DIR="$HOME/.nvm"
 [[ -s "$NVM_DIR/nvm.sh" ]] && source "$NVM_DIR/nvm.sh"
@@ -32,4 +32,10 @@ v() {
     }
     cd "$dst"
 }
+
+#export PATH="$PATH:$HOME/apps/bin"
+#export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:$HOME/apps/lib"
+#export XDG_DATA_DIRS="$HOME/.local/share:$XDG_DATA_DIRS"
+#export C_INCLUDE_PATH="$HOME/.local/include:$C_INCLUDE_PATH"
+#export CPLUS_INCLUDE_PATH="$HOME/.local/include:$CPLUS_INCLUDE_PATH"
 

@@ -47,7 +47,7 @@ if [[ -d "$target_tmp_dir/usr/lib" ]]; then
   mv "$target_tmp_dir/usr/lib" "$target_tmp_dir/$pkg_name/"
 fi
 
-mv "$target_tmp_dir/$pkg_name" "$target_pkg_dir"
+#mv "$target_tmp_dir/$pkg_name" "$target_pkg_dir"
 
 echo "done"
 
