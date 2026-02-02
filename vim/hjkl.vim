@@ -361,40 +361,6 @@ endfunction
 
 "===============================================================================
 
-nnoremap hl :call HJKLmenu()<CR>
-nnoremap <Tab><Tab> :EditVifm<CR>
-nnoremap <Tab>q :call OpenAlternateBufferWithSmartSplit()<CR>
-nnoremap <Home> <C-w>w
-nnoremap <F1> :q!<CR>
-nnoremap <F2> <Cmd>w<CR>
-nnoremap <F3> :call CloseBuffersSmart()<CR>
-nnoremap <F4> :call ConsolePrint()<CR>
-nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
-nnoremap <C-h> <C-w>h
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-l> <C-w>l
-"nnoremap <Esc><Esc> :
-"nnoremap W :call RandomBuffer()<CR>
-
-"inoremap jk <CR>
-inoremap hl <ESC>:call HJKLmenu()<CR>
-inoremap jj <ESC>
-inoremap <C-h> <C-x><C-o>
-inoremap <C-j> <C-n>
-inoremap <C-k> <C-p>
-inoremap <C-l> .
-nnoremap <Esc>h :echo "ALT-h"<CR>
-nnoremap <Esc>j :echo "ALT-j"<CR>
-nnoremap <Esc>k :echo "ALT-k"<CR>
-nnoremap <Esc>l :echo "ALT-l"<CR>
-"inoremap <F2> <Cmd>w<CR>
-"inoremap <F3> <ESC>:call ConsolePrint()<CR>
-
-"autocmd VimEnter * call system('setxkbmap -option caps:escape')
-"autocmd VimLeave * call system('setxkbmap -option')
-
-"===============================================================================
 let s:use_vertical_split = v:true
 let s:last_opened_bufnr = 0
 
@@ -426,4 +392,47 @@ function! OpenAlternateBufferWithSmartSplit() abort
   endif
 
 endfunction
+
+"===============================================================================
+
+function! CopyToClipboard(text)
+    call system('xclip -selection clipboard', a:text)
+endfunction
+
+"===============================================================================
+
+nnoremap hl :call HJKLmenu()<CR>
+nnoremap <Tab><Tab> :EditVifm<CR>
+nnoremap <Tab>q :call OpenAlternateBufferWithSmartSplit()<CR>
+nnoremap <Home> <C-w>w
+nnoremap <F1> :q!<CR>
+nnoremap <F2> <Cmd>w<CR>
+nnoremap <F3> :call CloseBuffersSmart()<CR>
+nnoremap <F4> :call ConsolePrint()<CR>
+nnoremap <F5> <Cmd>silent write !xclip -selection clipboard > /dev/null 2>&1<CR>
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+"nnoremap <Esc><Esc> :
+"nnoremap W :call RandomBuffer()<CR>
+
+"inoremap jk <CR>
+inoremap hl <ESC>:call HJKLmenu()<CR>
+inoremap jj <ESC>
+inoremap <C-h> <C-x><C-o>
+inoremap <C-j> <C-n>
+inoremap <C-k> <C-p>
+inoremap <C-l> .
+nnoremap yy yy:call CopyToClipboard(getreg('"'))<CR>
+vnoremap y y:call CopyToClipboard(getreg('"'))<CR>
+nnoremap <Esc>h :echo "ALT-h"<CR>
+nnoremap <Esc>j :echo "ALT-j"<CR>
+nnoremap <Esc>k :echo "ALT-k"<CR>
+nnoremap <Esc>l :echo "ALT-l"<CR>
+"inoremap <F2> <Cmd>w<CR>
+"inoremap <F3> <ESC>:call ConsolePrint()<CR>
+
+"autocmd VimEnter * call system('setxkbmap -option caps:escape')
+"autocmd VimLeave * call system('setxkbmap -option')
 

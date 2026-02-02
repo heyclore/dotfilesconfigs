@@ -22,13 +22,16 @@ highlight Executable ctermfg=244 ctermbg=-1 cterm=none
 highlight Socket ctermfg=244 ctermbg=-1 cterm=none
 highlight Device ctermfg=244 ctermbg=-1 cterm=none
 highlight Fifo ctermfg=250 ctermbg=-1 cterm=none
-highlight Link ctermfg=250 ctermbg=-1 cterm=none
-highlight BrokenLink ctermfg=238 ctermbg=11 cterm=none
+highlight Link ctermfg=143 ctermbg=-1 cterm=none
+highlight BrokenLink ctermfg=124 ctermbg=none cterm=none
 
 set nofollowlinks
 set number
 set relativenumber
 set notrash
+set wildmenu
+set ignorecase
+set smartcase
 
 nnoremap <F1> :q<cr>
 nnoremap <f2> :cd ~/apps/git/dotfilesconfigs/<cr>
@@ -37,5 +40,7 @@ nnoremap <C-L> :view<CR>
 nnoremap q :q<cr>
 nnoremap ` :cd ~<CR>
 nnoremap ~ :cd /<CR>
+
+mark 1 ~/apps/git/dotfilesconfigs/
 
 fileviewer *.png,*.jpg,*.jpeg,*.gif,*.webp chafa --size=80x120 --symbols=block --fill=block --polite on %f
