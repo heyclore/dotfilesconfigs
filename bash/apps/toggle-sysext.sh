@@ -3,8 +3,30 @@ set -euo pipefail
 
 BASE_DIR="/home/noodle/apps/sys"
 EXT_DIR="/run/extensions"
+PACMAN_DB="/var/lib/pacman"
 
 echo "=== systemd-sysext toggle ==="
+
+# ---------- pacman DB helpers ----------
+lock_pacman_db() {
+  if ! mount | grep -q "on $PACMAN_DB "; then
+    echo "Bind-mounting pacman DB..."
+    sudo mount --bind "$PACMAN_DB" "$PACMAN_DB"
+  fi
+
+  if ! mount | grep -q "on $PACMAN_DB .* ro,"; then
+    echo "Locking pacman DB (read-only)..."
+    sudo mount -o remount,ro "$PACMAN_DB"
+  fi
+}
+
+unlock_pacman_db() {
+  if mount | grep -q "on $PACMAN_DB "; then
+    echo "Unlocking pacman DB (read-write)..."
+    sudo mount -o remount,rw "$PACMAN_DB"
+    sudo umount "$PACMAN_DB"
+  fi
+}
 
 # Build list of extension directories
 mapfile -t EXT_PATHS < <(find "$BASE_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
@@ -28,6 +50,7 @@ for ext in "${EXT_LIST[@]}"; do
   if grep -qw "$ext" <<< "$SYSEXT_STATUS"; then
     echo "$ext overlay is merged. Unmerging..."
     sudo systemd-sysext unmerge
+    unlock_pacman_db
     exit 0
   fi
 done
@@ -62,6 +85,9 @@ sudo ln -sfn "$TARGET_DIR" "$EXT_DIR/$TARGET_NAME"
 # Merge extension
 echo "Merging $TARGET_NAME overlay..."
 sudo systemd-sysext refresh
+
+# Lock pacman DB BEFORE merging sysext
+lock_pacman_db
 
 echo "Done."
 

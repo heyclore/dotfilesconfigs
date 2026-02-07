@@ -32,6 +32,7 @@ set notrash
 set wildmenu
 set ignorecase
 set smartcase
+set dotfiles
 
 nnoremap <F1> :q<cr>
 nnoremap <f2> :cd ~/apps/git/dotfilesconfigs/<cr>
@@ -44,3 +45,5 @@ nnoremap ~ :cd /<CR>
 mark 1 ~/apps/git/dotfilesconfigs/
 
 fileviewer *.png,*.jpg,*.jpeg,*.gif,*.webp chafa --size=80x120 --symbols=block --fill=block --polite on %f
+
+filter /.Upwork|.codex|.cache|.gnupg|.icons|.pki/

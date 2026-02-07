@@ -8,7 +8,7 @@ parse_git_branch() {
 
 #PS1='$(parse_git_branch)[\u@\h \W]\$ '
 #PS1='[\u@\h \W]$(parse_git_branch)\$ '
-PS1='[\u@\h \[\e[38;5;246m\]\W\[\e[38;5;238m\]$(parse_git_branch)\[\e[0m\]]\$ '
+PS1='[\u@\h \[\e[38;5;246m\]\W\[\e[38;5;238m\]$(parse_git_branch)\[\e[0m\]] \$_$ '
 
 alias neofetch='neofetch --ascii_colors 8 --colors 7 8 7 8 8 7'
 alias gitt='git add . && git commit -mm'
