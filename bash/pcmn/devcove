@@ -16,3 +16,4 @@ binutils
 fakeroot
 cmake
 ninja
+clang
