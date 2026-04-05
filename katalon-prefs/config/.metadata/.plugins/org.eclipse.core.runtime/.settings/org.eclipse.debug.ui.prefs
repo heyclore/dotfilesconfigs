@@ -1,7 +1,7 @@
 Console.console_tab_width=4
 Console.highWaterMark=68000
 Console.lowWaterMark=60000
-StringVariablePreferencePage=183,153,152,121,
+StringVariablePreferencePage=183,153,152,331,
 eclipse.preferences.version=1
 org.eclipse.debug.ui.DisableSkipAllBreakpointsOnLaunch=false
 org.eclipse.debug.ui.RemoveFromLaunchHistory=false
