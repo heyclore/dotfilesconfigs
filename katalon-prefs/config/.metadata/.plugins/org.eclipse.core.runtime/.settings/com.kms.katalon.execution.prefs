@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+proxy.auth.preferences.set=true
+proxy.system.applyToDesiredCapabilities=true
+proxy.system.preferences.set=true

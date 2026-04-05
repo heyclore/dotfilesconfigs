@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+org.eclipse.jface.dialogfont=true
+studio_assist_config_type=GEN_AI
+studioassist.follow_up_question.enabled=false
+studioassist.projectContext.customKeywords=false
+studioassist.projectContext.objectRepository=false

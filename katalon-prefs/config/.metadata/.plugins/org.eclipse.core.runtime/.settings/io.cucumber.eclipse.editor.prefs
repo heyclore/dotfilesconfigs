@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+io.cucumber.eclipse.editor.show_run_shortcut_DEBUG=false
+io.cucumber.eclipse.editor.show_run_shortcut_PROFILE=false
+io.cucumber.eclipse.editor.show_run_shortcut_RUN=false

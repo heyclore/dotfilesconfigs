@@ -39,3 +39,7 @@ v() {
 #export C_INCLUDE_PATH="$HOME/.local/include:$C_INCLUDE_PATH"
 #export CPLUS_INCLUDE_PATH="$HOME/.local/include:$CPLUS_INCLUDE_PATH"
 
+export API_KEY=f09a60566f7fbe91377760ae36d9b86f
+export KATALON_MCP_ENABLED=false
+export JAVA_HOME=/usr/lib/jvm/java-21-openjdk
+export PATH=$JAVA_HOME/bin:$PATH

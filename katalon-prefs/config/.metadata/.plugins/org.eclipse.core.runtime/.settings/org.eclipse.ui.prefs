@@ -1,0 +1,5 @@
+DISABLE_OPEN_EDITOR_IN_PLACE=true
+PROMPT_WHEN_SAVEABLE_STILL_OPEN=false
+USE_COLORED_LABELS=false
+eclipse.preferences.version=1
+showIntro=false

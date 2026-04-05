@@ -1,0 +1,3 @@
+eclipse.preferences.version=1
+org.codehaus.groovy.eclipse.codeassist.closures.noparens=false
+org.codehaus.groovy.eclipse.codeassist.filtereddgms=,

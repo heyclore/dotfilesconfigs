@@ -1,0 +1,7 @@
+description.disableLinking=true
+description.filestatelongevity=172800000
+description.maxfilestates=22
+description.maxfilestatesize=2097152
+eclipse.preferences.version=1
+missingEncodingMarkerSeverity=-1
+version=1

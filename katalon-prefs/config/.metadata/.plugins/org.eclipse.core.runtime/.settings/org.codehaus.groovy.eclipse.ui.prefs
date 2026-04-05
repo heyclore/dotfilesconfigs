@@ -1,0 +1,3 @@
+eclipse.preferences.version=1
+groovy.debug.filter.list=com.sun,groovy.lang,groovyjarjarasm,java.lang.reflect,jdk.internal,org.apache.groovy,org.codehaus.groovy,org.eclipse.jdt.launching.internal,sun
+groovy.debug.force_options=false

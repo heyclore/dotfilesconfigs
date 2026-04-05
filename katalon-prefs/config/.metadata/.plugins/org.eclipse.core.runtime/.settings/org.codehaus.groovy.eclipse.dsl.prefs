@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+org.codehaus.groovy.eclipse.dsl.auto.add.support=false
+org.codehaus.groovy.eclipse.dsl.disabled=true
+org.codehaus.groovy.eclipse.dsl.scripts.disabled=
