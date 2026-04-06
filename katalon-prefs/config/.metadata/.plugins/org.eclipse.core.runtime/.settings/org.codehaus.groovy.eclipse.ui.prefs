@@ -1,3 +1,8 @@
 eclipse.preferences.version=1
 groovy.debug.filter.list=com.sun,groovy.lang,groovyjarjarasm,java.lang.reflect,jdk.internal,org.apache.groovy,org.codehaus.groovy,org.eclipse.jdt.launching.internal,sun
 groovy.debug.force_options=false
+groovy.editor.highlight.assert.color=255,255,255
+groovy.editor.highlight.gjdk.color=255,255,255
+groovy.editor.highlight.javakeywords.color=255,255,255
+groovy.editor.highlight.javatypes.color=255,255,255
+groovy.editor.highlight.return.color=255,255,255

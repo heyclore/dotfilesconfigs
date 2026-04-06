@@ -1,4 +1,4 @@
-AbstractTextEditor.Accessibility.UseCustomCarets=false
+currentLine=false
 eclipse.preferences.version=1
 firstTimeSetupCompleted=true
 lineNumberRuler=true

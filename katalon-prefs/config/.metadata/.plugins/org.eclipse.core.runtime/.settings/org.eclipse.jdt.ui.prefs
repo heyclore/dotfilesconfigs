@@ -45,6 +45,7 @@ java_single_line_comment=255,255,255
 java_single_line_comment_bold=true
 java_string=255,255,255
 java_string_bold=true
+matchingBracketsColor=154,153,150
 org.eclipse.jdt.ui.category=false
 org.eclipse.jdt.ui.exception.name=e
 org.eclipse.jdt.ui.formatterprofiles.version=23
