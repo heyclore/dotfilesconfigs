@@ -1,0 +1,5 @@
+backup
+dd if=/dev/sda3 bs=4M iflag=fullblock status=progress | zstd -T4 -o /backup-sda3.img.zst
+
+restore
+zstd -d -c /backup-sda3.img.zst | dd of=/dev/sda3 bs=4M status=progress conv=fsync
