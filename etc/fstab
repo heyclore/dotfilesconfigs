@@ -27,3 +27,33 @@ tmpfs /tmp tmpfs rw,nosuid,nodev,noatime,mode=1777,size=1536M 0 0
 
 # Temporary filesystem
 #tmpfs  /tmp  tmpfs  rw,nosuid,nodev,noatime,mode=1777,size=1536M  0  0
+
+
+###############
+
+# Root filesystem
+#UUID=36b90b59-88c4-4a74-9c1f-4449607db5b4  /           btrfs  subvol=@,compress=zstd,noatime  0  0
+
+# Home
+#UUID=36b90b59-88c4-4a74-9c1f-4449607db5b4  /home       btrfs  subvol=@home,compress=zstd,noatime  0  0
+
+# Home foo (isolated workspace)
+#UUID=36b90b59-88c4-4a74-9c1f-4449607db5b4  /home/foo   btrfs  subvol=@home_foo,compress=zstd,noatime  0  0
+
+# Var log (noisy, no compression needed)
+#UUID=36b90b59-88c4-4a74-9c1f-4449607db5b4  /var/log    btrfs  subvol=@var_log,noatime  0  0
+
+# Var cache (disposable)
+#UUID=36b90b59-88c4-4a74-9c1f-4449607db5b4  /var/cache  btrfs  subvol=@var_cache,noatime  0  0
+
+# Snapshots
+#UUID=36b90b59-88c4-4a74-9c1f-4449607db5b4  /.snapshots btrfs  subvol=@snapshots  0  0
+
+# EFI System Partition
+#UUID=EBB5-4E3E  /boot  vfat  rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=ascii,shortname=mixed,utf8  0  2
+#UUID=EBB5-4E3E  /boot  vfat  rw,relatime,fmask=0077,dmask=0077,utf8  0  2
+
+# Optional: tmpfs for /tmp (reduces disk I/O)
+# tmpfs  /tmp  tmpfs  rw,nosuid,nodev,noatime,mode=1777,size=1.5G  0  0
+
+###############
