@@ -2,171 +2,219 @@
 
 ## Assumptions
 
-* /dev/sda1 = EFI (already exists, systemd-boot installed)
-* /dev/sda2 = Rescue OS (ext4, used for recovery)
-* /dev/sda3 = main Arch system (Btrfs)
+- `/dev/sda1` = EFI partition (systemd-boot installed or reused)
+- `/dev/sda2` = Rescue OS (ONLY used for recovery)
+- `/dev/sda3` = Arch Linux system (Btrfs)
 
 ---
 
-# 1. Format sda3 (destroys data)
-```
+# 1. Format system partition (WARNING: destroys data)
+
+```bash
 wipefs -a /dev/sda3
 mkfs.btrfs /dev/sda3
 ```
 
 ---
 
-# 2. Create minimal layout (clean separation)
-```
+# 2. Create Btrfs subvolumes
+
+```bash
 mount /dev/sda3 /mnt
 
 btrfs subvolume create /mnt/@
+btrfs subvolume create /mnt/@home
 btrfs subvolume create /mnt/@snapshots
 
 umount /mnt
 ```
+
 ---
 
-# 3. Mount root + snapshots
-```
+# 3. Mount system
+
+```bash
 mount -o subvol=@,compress=zstd,noatime /dev/sda3 /mnt
 
-mkdir /mnt/.snapshots
+mkdir -p /mnt/home
+mkdir -p /mnt/.snapshots
+
+mount -o subvol=@home,compress=zstd,noatime /dev/sda3 /mnt/home
 mount -o subvol=@snapshots /dev/sda3 /mnt/.snapshots
 ```
+
 ---
 
 # 4. Install base system
-```
+
+```bash
 pacstrap /mnt base linux linux-firmware networkmanager btrfs-progs
 genfstab -U /mnt >> /mnt/etc/fstab
 arch-chroot /mnt
 ```
+
 ---
 
 # 5. Basic configuration
-```
+
+```bash
 ln -sf /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 hwclock --systohc
 
 echo "arch" > /etc/hostname
 systemctl enable NetworkManager
 ```
+
 ---
 
-# 6. systemd-boot (reuse existing EFI)
+# 6. systemd-boot (EFI reuse)
 
-```
+```bash
 bootctl install
 ```
 
 ## /boot/loader/loader.conf
-```
+
+```ini
 default arch.conf
 timeout 3
 editor no
 ```
+
 ## /boot/loader/entries/arch.conf
-```
+
+```ini
 title   Arch Linux
 linux   /vmlinuz-linux
 initrd  /initramfs-linux.img
 options root=/dev/sda3 rw rootflags=subvol=@
 ```
----
-
-# 7. Create initial snapshot (baseline)
-
-```
-btrfs subvolume snapshot -r / /.snapshots/clean
-```
 
 ---
 
-# 8. Finish
+# 7. First snapshot (baseline)
+
+```bash
+btrfs subvolume snapshot -r / /.snapshots/base-clean
 ```
+
+---
+
+# 8. Finish installation
+
+```bash
 exit
 umount -R /mnt
 reboot
 ```
+
 ---
 
-# RESULT
+# FINAL SYSTEM STRUCTURE
 
-Structure:
-```
+```text
 Btrfs filesystem
-├── @             → mounted as /
-└── @snapshots    → mounted as /.snapshots
+├── @              → root (/)
+├── @home          → /home
+└── @snapshots     → /.snapshots
 ```
-
-Boot options:
-
-* Arch Linux → main system
-* Rescue OS → recovery environment
 
 ---
 
-# DAILY SNAPSHOT (manual)
+# SNAPSHOT USAGE (manual only)
 
-Create snapshot when needed:
+## Create snapshot before changes
 
-btrfs subvolume snapshot -r / /.snapshots/clean
-
-If it already exists:
-
-btrfs subvolume delete /.snapshots/clean
-btrfs subvolume snapshot -r / /.snapshots/clean
-
-Or use another name:
-
+```bash
 btrfs subvolume snapshot -r / /.snapshots/before-upgrade
+```
+
+## Create baseline snapshot
+
+```bash
+btrfs subvolume snapshot -r / /.snapshots/base-clean
+```
 
 ---
 
-# RECOVERY (from rescue OS)
+# RECOVERY (ONLY via Rescue OS)
 
-1. Boot into rescue OS
+## IMPORTANT RULE:
+Recovery is ALWAYS done from `/dev/sda2` (Rescue OS), not from Arch.
 
-2. Mount filesystem (top-level, not subvol):
+---
 
+## 1. Boot into Rescue OS
+
+---
+
+## 2. Mount Btrfs system
+
+```bash
 mount /dev/sda3 /mnt
-
-3. Restore snapshot safely:
 ```
+
+---
+
+## 3. List available snapshots (optional check)
+
+```bash
+btrfs subvolume list /mnt
+```
+
+---
+
+## 4. Restore system snapshot
+
+```bash
 btrfs subvolume delete /mnt/@
-btrfs subvolume snapshot /mnt/@snapshots/clean /mnt/@
+btrfs subvolume snapshot /mnt/@snapshots/base-clean /mnt/@
 ```
-4. Reboot
 
-(After confirming system works, you may delete old root)
+OR restore another snapshot:
 
+```bash
+btrfs subvolume snapshot /mnt/@snapshots/before-upgrade /mnt/@
+```
+
+---
+
+## 5. Cleanup (optional)
+
+```bash
 btrfs subvolume delete /mnt/@broken
+```
+
+---
+
+## 6. Reboot into Arch
+
+```bash
+reboot
+```
 
 ---
 
 # NOTES
 
-* Two subvolumes only: @ and @snapshots
-* Snapshots stored outside root → no recursion
-* No automation, no extra tools
-* Rescue OS required for safe restore
-* Snapshots consume space → delete old ones if needed:
-
-btrfs subvolume delete /.snapshots/<name>
+- Only `@` is restored during rollback
+- `/home` (`@home`) is NEVER touched during recovery
+- Snapshots are system-only restore points
+- Rescue OS is the ONLY recovery environment
 
 ---
 
-# OPTIONAL (recommended)
+# OPTIONAL MAINTENANCE
 
-Run periodic scrub to detect corruption:
-
+```bash
 btrfs scrub start -Bd /
+```
 
 ---
 
 # MENTAL MODEL
 
-* / → your live system (@)
-* /.snapshots/* → restore points (@snapshots)
-* Rescue OS → swap snapshot → restore system
+- `/` → active system (`@`)
+- `/home` → persistent user data (`@home`)
+- `/.snapshots` → system restore points
+- `/dev/sda2` → recovery environment (Rescue OS only)
