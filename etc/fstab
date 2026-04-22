@@ -14,3 +14,16 @@ UUID=EBB5-4E3E /boot vfat rw,relatime,fmask=0077,dmask=0077,codepage=437,iochars
 
 
 tmpfs /tmp tmpfs rw,nosuid,nodev,noatime,mode=1777,size=1536M 0 0
+
+
+# Root filesystem (Btrfs subvolume @)
+#UUID=36b90b59-88c4-4a74-9c1f-4449607db5b4  /  btrfs  subvol=@,compress=zstd,noatime  0  0
+
+# EFI System Partition
+#UUID=EBB5-4E3E  /boot  vfat  rw,relatime,fmask=0077,dmask=0077,codepage=437,iocharset=ascii,shortname=mixed,utf8  0  2
+
+# Snapshots subvolume (optional access point)
+#UUID=36b90b59-88c4-4a74-9c1f-4449607db5b4  /.snapshots  btrfs  subvol=@snapshots  0  0
+
+# Temporary filesystem
+#tmpfs  /tmp  tmpfs  rw,nosuid,nodev,noatime,mode=1777,size=1536M  0  0
