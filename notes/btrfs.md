@@ -1,144 +1,179 @@
-# Arch Linux Btrfs Install (sda3 only) + systemd-boot
+# Arch Linux Btrfs Install (Minimal) + systemd-boot
 
-Assumption:
-- sda1 = EFI (already exists, systemd-boot installed)
-- sda2 = Rescue OS (already installed, ext4)
-- sda3 = target for main Arch system (Btrfs)
+## Assumptions
+
+* `/dev/sda1` = EFI (already exists, systemd-boot installed)
+* `/dev/sda2` = Rescue OS (ext4, used for recovery)
+* `/dev/sda3` = main Arch system (Btrfs)
 
 ---
 
-# 1. Format sda3 (WARNING: destroys data)
+# 1. Format sda3 (destroys data)
 
-wipe filesystem signatures:
-
+```
 wipefs -a /dev/sda3
-
-format as Btrfs:
-
 mkfs.btrfs /dev/sda3
+```
 
 ---
 
-# 2. Mount and create subvolume layout
+# 2. Create minimal layout
 
+```
 mount /dev/sda3 /mnt
 
-create main root subvolume:
-
 btrfs subvolume create /mnt/@
-
-optional snapshot folder:
-
-btrfs subvolume create /mnt/.snapshots
-
-unmount:
+mkdir /mnt/@/.snapshots   # simple directory for snapshots
 
 umount /mnt
+```
 
 ---
 
-# 3. Mount root subvolume (@)
+# 3. Mount root subvolume
 
-mount main system:
-
+```
 mount -o subvol=@ /dev/sda3 /mnt
-
-create snapshot directory mount (optional but recommended structure):
-
-mkdir -p /mnt/.snapshots
+```
 
 ---
 
 # 4. Install base system
 
-pacstrap /mnt base linux linux-firmware vim networkmanager btrfs-progs
-
-generate fstab:
-
+```
+pacstrap /mnt base linux linux-firmware networkmanager btrfs-progs
 genfstab -U /mnt >> /mnt/etc/fstab
+arch-chroot /mnt
+```
 
 ---
 
-# 5. Chroot into new system
+# 5. Basic configuration
 
-arch-chroot /mnt
-
-set timezone:
-
+```
 ln -sf /usr/share/zoneinfo/Asia/Jakarta /etc/localtime
 hwclock --systohc
 
-hostname:
-
 echo "arch" > /etc/hostname
-
-enable network:
-
 systemctl enable NetworkManager
+```
 
 ---
 
-# 6. Install systemd-boot (use existing EFI sda1)
+# 6. systemd-boot (reuse existing EFI)
 
+```
 bootctl install
+```
 
----
+## /boot/loader/loader.conf
 
-create loader config:
-
-/boot/loader/loader.conf
-
+```
 default arch.conf
 timeout 3
 editor no
+```
 
----
+## /boot/loader/entries/arch.conf
 
-create boot entry:
-
-/boot/loader/entries/arch.conf
-
-title   Arch Linux (@)
+```
+title   Arch Linux
 linux   /vmlinuz-linux
 initrd  /initramfs-linux.img
 options root=/dev/sda3 rw rootflags=subvol=@
+```
 
 ---
 
-# 7. (Optional) create initial snapshot
+# 7. Create initial snapshot (baseline)
 
-after install:
-
+```
 btrfs subvolume snapshot -r / /.snapshots/clean
+```
 
 ---
 
-# 8. Exit and reboot
+# 8. Finish
 
+```
 exit
 umount -R /mnt
 reboot
+```
 
 ---
 
 # RESULT
 
 Boot options:
-- Arch Linux (@ system) → daily system
-- Rescue OS (sda2) → recovery tool
+
+* Arch Linux → main system
+* Rescue OS → recovery environment
 
 ---
 
-# RECOVERY RULE
+# DAILY BACKUP (manual, simple)
 
-If system breaks:
+Create snapshot when needed:
 
-1. Boot Rescue OS
-2. Mount sda3:
-   mount -o subvol=@ /dev/sda3 /mnt
-3. Restore snapshot if needed:
+```
+btrfs subvolume snapshot -r / /.snapshots/clean
+```
 
-   btrfs subvolume delete /mnt/@
-   btrfs subvolume snapshot /mnt/.snapshots/clean /mnt/@
+If it already exists:
 
-4. reboot
+```
+btrfs subvolume delete /.snapshots/clean
+btrfs subvolume snapshot -r / /.snapshots/clean
+```
+
+Or use another name:
+
+```
+btrfs subvolume snapshot -r / /.snapshots/before-upgrade
+```
+
+---
+
+# RECOVERY (from rescue OS)
+
+1. Boot into rescue OS
+
+2. Mount system:
+
+```
+mount /dev/sda3 /mnt
+```
+
+3. Restore snapshot:
+
+```
+btrfs subvolume delete /mnt/@
+btrfs subvolume snapshot /mnt/@/.snapshots/clean /mnt/@
+```
+
+4. Reboot
+
+---
+
+# NOTES
+
+* Only one subvolume (`@`) → minimal complexity
+* Snapshots stored inside root (`/.snapshots`)
+* No automation, no extra tools
+* Rescue OS is required for safe restore
+* Snapshots consume space → delete old ones if needed:
+
+```
+btrfs subvolume delete /.snapshots/<name>
+```
+
+---
+
+# MENTAL MODEL
+
+* `/` → your system
+* `/.snapshots/clean` → restore point
+* Rescue OS → your recovery tool
+
+---
