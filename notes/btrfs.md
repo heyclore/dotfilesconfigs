@@ -26,7 +26,6 @@ btrfs subvolume create /mnt/@
 btrfs subvolume create /mnt/@home
 btrfs subvolume create /mnt/@var_log
 btrfs subvolume create /mnt/@var_cache
-btrfs subvolume create /mnt/@home_foo
 btrfs subvolume create /mnt/@snapshots
 
 umount /mnt
@@ -40,16 +39,17 @@ umount /mnt
 mount -o subvol=@,compress=zstd,noatime /dev/sda3 /mnt
 
 mkdir -p /mnt/home
-mkdir -p /mnt/home/foo
 mkdir -p /mnt/var/log
 mkdir -p /mnt/var/cache
 mkdir -p /mnt/.snapshots
 
 mount -o subvol=@home,compress=zstd,noatime /dev/sda3 /mnt/home
-mount -o subvol=@home_foo,compress=zstd,noatime /dev/sda3 /mnt/home/foo
 mount -o subvol=@var_log,noatime /dev/sda3 /mnt/var/log
 mount -o subvol=@var_cache,noatime /dev/sda3 /mnt/var/cache
 mount -o subvol=@snapshots /dev/sda3 /mnt/.snapshots
+
+chattr +C /mnt/var/log
+chattr +C /mnt/var/cache
 ```
 
 ---
@@ -142,7 +142,6 @@ reboot
 Btrfs filesystem
 ├── @              → /
 ├── @home          → /home
-├── @home_foo      → /home/foo
 ├── @var_log       → /var/log
 ├── @var_cache     → /var/cache
 └── @snapshots     → /.snapshots
@@ -163,7 +162,10 @@ btrfs subvolume snapshot -r / /.snapshots/before-upgrade
 ```bash
 btrfs subvolume snapshot -r / /.snapshots/base-clean
 ```
-
+## Create home snapshot
+```
+btrfs subvolume snapshot -r /home /.snapshots/home-snap
+```
 ---
 
 # RECOVERY (ONLY via Rescue OS)
@@ -206,7 +208,11 @@ OR restore another snapshot:
 ```bash
 btrfs subvolume snapshot /mnt/@snapshots/before-upgrade /mnt/@
 ```
-
+OR restore home snapshot:
+```
+btrfs subvolume delete /mnt/@home
+btrfs subvolume snapshot /mnt/@snapshots/home-snap /mnt/@home
+```
 ---
 
 ## 5. Cleanup (optional)
@@ -229,7 +235,6 @@ reboot
 
 * Only `@` is restored during rollback
 * `/home` (`@home`) is NEVER touched
-* `/home/foo` (`@home_foo`) is also NEVER touched
 * `/var/log` and `/var/cache` are excluded from snapshots
 * Snapshots are system-only restore points
 * Rescue OS is the ONLY recovery environment
@@ -248,7 +253,6 @@ btrfs scrub start -Bd /
 
 * `/` → system state (`@`)
 * `/home` → user data (`@home`)
-* `/home/foo` → isolated workspace (`@home_foo`)
 * `/var/log` → logs (noisy, excluded)
 * `/var/cache` → disposable cache
 * `/.snapshots` → system restore points
