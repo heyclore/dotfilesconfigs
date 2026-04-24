@@ -43,13 +43,10 @@ mkdir -p /mnt/var/log
 mkdir -p /mnt/var/cache
 mkdir -p /mnt/.snapshots
 
-mount -o subvol=@home,compress=zstd,noatime /dev/sda3 /mnt/home
-mount -o subvol=@var_log,noatime /dev/sda3 /mnt/var/log
-mount -o subvol=@var_cache,noatime /dev/sda3 /mnt/var/cache
-mount -o subvol=@snapshots /dev/sda3 /mnt/.snapshots
-
-chattr +C /mnt/var/log
-chattr +C /mnt/var/cache
+mount -o subvol=@home,compress=zstd:3,noatime,ssd,discard=async,space_cache=v2,commit=60 /dev/sda3 /mnt/home
+mount -o subvol=@var_log,noatime,ssd,discard=async,space_cache=v2,commit=60 /dev/sda3 /mnt/var/log
+mount -o subvol=@var_cache,noatime,ssd,discard=async,space_cache=v2,commit=60 /dev/sda3 /mnt/var/cache
+mount -o subvol=@snapshots,compress=zstd:3,noatime,ssd,discard=async,space_cache=v2,commit=60 /dev/sda3 /mnt/.snapshots
 ```
 
 ---
