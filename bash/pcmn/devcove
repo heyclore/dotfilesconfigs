@@ -17,3 +17,5 @@ fakeroot
 cmake
 ninja
 clang
+devtools
+meson
