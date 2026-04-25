@@ -1,0 +1,2 @@
+#!/bin/sh
+dmenu_path | dmenu -p  "$(cat /sys/class/power_supply/BATT/capacity)" "$@" | ${SHELL:-"/bin/sh"} &
