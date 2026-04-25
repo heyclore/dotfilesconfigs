@@ -128,4 +128,5 @@ if exists('$JANCOK')
   augroup END
 endif
 
-source /home/noodle/apps/git/dotfilesconfigs/vim/hjkl.vim
+#source /home/noodle/apps/git/dotfilesconfigs/vim/hjkl.vim
+source ~/apps/git/dotfilesconfigs/vim/hjkl.vim

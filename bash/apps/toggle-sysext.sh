@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE_DIR="/home/noodle/apps/sys"
+BASE_DIR="$HOME/apps/sys"
 EXT_DIR="/run/extensions"
 PACMAN_DB="/var/lib/pacman"
 
