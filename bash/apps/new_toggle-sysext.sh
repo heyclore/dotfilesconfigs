@@ -4,41 +4,39 @@ set -euo pipefail
 BASE_DIR="$HOME/apps/sys"
 EXT_DIR="/run/extensions"
 PACMAN_DB="/var/lib/pacman"
-# Temporary bridge to isolate Btrfs subvolumes
-SOURCE_BRIDGE="/run/sysext_source_bridge"
 
-echo "=== systemd-sysext Btrfs-Safe Toggle ==="
+echo "=== systemd-sysext toggle ==="
 
-# ---------- Helpers ----------
+# ---------- pacman DB helpers ----------
 lock_pacman_db() {
-  if ! mount | grep -q "on $PACMAN_DB "; then
+  echo "Locking pacman DB..."
+
+  # If not already a mountpoint, create a bind mount
+  if ! mountpoint -q "$PACMAN_DB"; then
     echo "Bind-mounting pacman DB..."
     sudo mount --bind "$PACMAN_DB" "$PACMAN_DB"
   fi
 
-  if ! mount | grep -q "on $PACMAN_DB .* ro,"; then
-    echo "Locking pacman DB (read-only)..."
-    sudo mount -o remount,ro "$PACMAN_DB"
+  # Ensure it's read-only (idempotent)
+  if ! findmnt -no OPTIONS "$PACMAN_DB" | grep -qw ro; then
+    echo "Remounting pacman DB as read-only..."
+    sudo mount --bind -o ro "$PACMAN_DB" "$PACMAN_DB"
+  else
+    echo "Pacman DB already read-only."
   fi
 }
 
 unlock_pacman_db() {
-  if mount | grep -q "on $PACMAN_DB "; then
-    echo "Unlocking pacman DB (read-write)..."
-    sudo mount -o remount,rw "$PACMAN_DB"
-    sudo umount "$PACMAN_DB"
-  fi
+  echo "Unlocking pacman DB..."
+
+  # Remove all stacked mounts on this path
+  while mountpoint -q "$PACMAN_DB"; do
+    sudo umount "$PACMAN_DB" || break
+  done
 }
 
-cleanup_btrfs_bridge() {
-  if mountpoint -q "$SOURCE_BRIDGE"; then
-    echo "Cleaning up Btrfs source bridge..."
-    sudo umount "$SOURCE_BRIDGE"
-  fi
-  sudo rm -rf "$SOURCE_BRIDGE"
-}
-
-# ---------- Execution ----------
+# Ensure cleanup on exit
+trap unlock_pacman_db EXIT
 
 # Build list of extension directories
 mapfile -t EXT_PATHS < <(find "$BASE_DIR" -mindepth 1 -maxdepth 1 -type d | sort)
@@ -48,25 +46,25 @@ if [[ ${#EXT_PATHS[@]} -eq 0 ]]; then
   exit 1
 fi
 
+# Extract just names
 EXT_LIST=()
 for path in "${EXT_PATHS[@]}"; do
   EXT_LIST+=("$(basename "$path")")
 done
 
-SYSEXT_STATUS="$(systemd-sysext status 2>/dev/null || echo "none")"
+# Get sysext status once
+SYSEXT_STATUS="$(systemd-sysext status)"
 
-# --- GLOBAL UNMERGE ---
+# --- GLOBAL SHORT-CIRCUIT: If any known extension is merged, unmerge ---
 for ext in "${EXT_LIST[@]}"; do
   if grep -qw "$ext" <<< "$SYSEXT_STATUS"; then
-    echo "$ext overlay is active. Unmerging..."
+    echo "$ext overlay is merged. Unmerging..."
     sudo systemd-sysext unmerge
-    unlock_pacman_db
-    cleanup_btrfs_bridge
     exit 0
   fi
 done
 
-# --- INTERACTIVE PICKER ---
+# -------- INTERACTIVE PICKER --------
 echo "Available extensions:"
 select TARGET_NAME in "${EXT_LIST[@]}"; do
   if [[ -n "$TARGET_NAME" ]]; then
@@ -79,24 +77,25 @@ done
 
 echo "Selected extension: $TARGET_NAME"
 
-# 1. Prepare Bridges and Directories
-sudo mkdir -p "$EXT_DIR"
-sudo mkdir -p "$SOURCE_BRIDGE"
+# Prepare extensions directory
+if [[ ! -d "$EXT_DIR" ]]; then
+  echo "Creating $EXT_DIR..."
+  sudo mkdir -p "$EXT_DIR"
+fi
 
-# 2. THE FIX: Bind mount extension to /run to bypass Btrfs subvolume boundaries
-echo "Bridging $TARGET_NAME to /run..."
-sudo mount --bind "$TARGET_DIR" "$SOURCE_BRIDGE"
-
-# 3. Symlink from the bridge, not from $HOME
-echo "Cleaning old links and creating new bridge link..."
+# Remove old symlinks (only one active extension)
+echo "Cleaning old extension links..."
 sudo find "$EXT_DIR" -maxdepth 1 -type l -delete
-sudo ln -sfn "$SOURCE_BRIDGE" "$EXT_DIR/$TARGET_NAME"
 
-# 4. Merge
-echo "Merging extension..."
-sudo systemd-sysext refresh
+# Create symlink
+echo "Linking $TARGET_NAME → $EXT_DIR"
+sudo ln -sfn "$TARGET_DIR" "$EXT_DIR/$TARGET_NAME"
 
-# 5. Lock DB
+# 🔒 Lock pacman BEFORE merge
 lock_pacman_db
 
-echo "Done. Your /home should remain Read-Write."
+# Merge extension
+echo "Merging $TARGET_NAME overlay..."
+sudo systemd-sysext refresh
+
+echo "Done."
