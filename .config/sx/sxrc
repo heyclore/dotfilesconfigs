@@ -1,13 +1,15 @@
 if [ "$HOSTNAME" = "overlord" ]; then
     export XCURSOR_SIZE=11
     xrandr --output DP-3 --rotation right --scale 1.171
-    unclutter --timeout 1 &
 
     if ! pactl list short modules | grep -q module-alsa-source; then
         pactl load-module module-alsa-source device=hw:1,0
     fi
 
 elif [ "$HOSTNAME" = "redsea" ]; then
+    export XCURSOR_SIZE=32
+    export GDK_SCALE=2
+    export GDK_DPI_SCALE=2
     xrandr --output eDP-1 --mode 1600x2560 --rate 59 --rotate left --dpi 192 
     if false; then
     xrandr --output eDP-1 --mode 1600x2560 --rate 59 --scale 0.5x0.5  --rotate left
