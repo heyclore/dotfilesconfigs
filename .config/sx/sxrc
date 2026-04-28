@@ -1,6 +1,7 @@
 if [ "$HOSTNAME" = "overlord" ]; then
     export XCURSOR_SIZE=11
     xrandr --output DP-3 --rotation right --scale 1.171
+    $HOME/apps/pac/extra/usr/bin/unclutter -idle 1 &
 
 
 elif [ "$HOSTNAME" = "redsea" ]; then
