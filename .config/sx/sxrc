@@ -1,13 +1,13 @@
 if [ "$HOSTNAME" = "overlord" ]; then
     export XCURSOR_SIZE=11
     xrandr --output DP-3 --rotation right --scale 1.171
-    $HOME/apps/pac/extra/usr/bin/unclutter -idle 1 &
+    unclutter -idle 1 --start-hidden &
 
 
 elif [ "$HOSTNAME" = "redsea" ]; then
     export GDK_SCALE=2
     xrandr --output eDP-1 --mode 1600x2560 --rate 59 --rotate left --dpi 192
-    /home/holyc/apps/pac/extra/usr/bin/unclutter -idle 1 &
+    unclutter -idle 1 --start-hidden &
     if false; then
     export XCURSOR_SIZE=64
     export GDK_DPI_SCALE=2
