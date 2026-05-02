@@ -25,7 +25,7 @@ set mouse=a
 set ts=2 sw=2 expandtab
 set shell=/bin/bash
 set path=.,,
-set completeopt=menuone,noselect
+set completeopt=menuone
 set laststatus=2
 set nobackup
 set nowritebackup
@@ -36,8 +36,8 @@ set updatetime=300
 set cursorline
 set ignorecase
 set smartcase
-set nowrap
 set noautochdir
+#set nowrap
 
 ####################################################################
 
