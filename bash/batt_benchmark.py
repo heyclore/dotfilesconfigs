@@ -39,6 +39,20 @@ def get_ram_gb():
     except Exception:
         return 0.0
 
+def get_gpu_usage():
+    try:
+        with open("/sys/class/drm/card1/device/gpu_busy_percent", "r") as f:
+            return float(f.read().strip())
+    except Exception:
+        return 0.0
+
+def get_power_watts():
+    try:
+        with open("/sys/class/power_supply/BATT/power_now", "r") as f:
+            return float(f.read().strip()) / 1_000_000
+    except Exception:
+        return 0.0
+
 # Open file with line buffering (buffering=1) so it writes every line immediately
 with open(LOG_FILE, "a", buffering=1) as log:
     while True:
@@ -46,9 +60,17 @@ with open(LOG_FILE, "a", buffering=1) as log:
         batt = get_battery()
         cpu = get_cpu_ghz()
         mem = get_ram_gb()
+        gpu = get_gpu_usage()
+        power = get_power_watts()
 
-        log_entry = f"TIME: {ts}, BATTERY: {batt}%, CPU: {cpu:.2f}GHz, RAM: {mem:.2f}GB"
+        #log_entry = f"TIME: {ts}, BATTERY: {batt}%, CPU: {cpu:.2f}GHz, RAM: {mem:.2f}GB"
+        log_entry = (
+                f"TIME: {ts}, BATTERY: {batt}%, "
+                f"CPU: {cpu:.2f}GHz, RAM: {mem:.2f}GB, "
+                f"GPU: {gpu:.0f}%, "
+                f"POWER: {power:.2f}W"
+                )
         print(log_entry)
         log.write(log_entry + '\n')
 
-        time.sleep(1)
+        time.sleep(30)
