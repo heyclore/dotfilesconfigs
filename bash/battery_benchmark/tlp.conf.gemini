@@ -1,0 +1,79 @@
+# --- TLP Main Config ---
+TLP_ENABLE=1
+TLP_WARN_LEVEL=3
+TLP_AUTO_SWITCH=1
+
+# Use the 'power-saver' profile for both, or 'balanced' for AC if you prefer.
+TLP_PROFILE_AC=BAL
+TLP_PROFILE_BAT=SAV
+
+# --- Processor and Performance ---
+# Active mode enables EPP (Energy Performance Preference) for AMD Zen 2+
+CPU_DRIVER_OPMODE_ON_AC=active
+CPU_DRIVER_OPMODE_ON_BAT=active
+CPU_DRIVER_OPMODE_ON_SAV=active
+
+CPU_SCALING_GOVERNOR_ON_AC=powersave
+CPU_SCALING_GOVERNOR_ON_BAT=powersave
+CPU_SCALING_GOVERNOR_ON_SAV=powersave
+
+# EPP: 'power' is the most aggressive saving setting
+CPU_ENERGY_PERF_POLICY_ON_AC=balance_power
+CPU_ENERGY_PERF_POLICY_ON_BAT=power
+CPU_ENERGY_PERF_POLICY_ON_SAV=power
+
+# Disable Turbo/Boost to prevent high-wattage spikes
+CPU_BOOST_ON_AC=0
+CPU_BOOST_ON_BAT=0
+CPU_BOOST_ON_SAV=0
+
+# Hardware platform profile
+PLATFORM_PROFILE_ON_AC=balanced
+PLATFORM_PROFILE_ON_BAT=low-power
+PLATFORM_PROFILE_ON_SAV=low-power
+
+# --- Graphics (AMD Radeon 780M) ---
+RADEON_DPM_PERF_LEVEL_ON_AC=auto
+RADEON_DPM_PERF_LEVEL_ON_BAT=low
+RADEON_DPM_PERF_LEVEL_ON_SAV=low
+
+# Adaptive Backlight Management (Saves screen power)
+AMDGPU_ABM_LEVEL_ON_AC=1
+AMDGPU_ABM_LEVEL_ON_BAT=3
+AMDGPU_ABM_LEVEL_ON_SAV=4
+
+# --- Disks & Storage ---
+DISK_IDLE_SECS_ON_AC=0
+DISK_IDLE_SECS_ON_BAT=2
+MAX_LOST_WORK_SECS_ON_AC=15
+MAX_LOST_WORK_SECS_ON_BAT=60
+
+# NVMe Power Management
+AHCI_RUNTIME_PM_ON_AC=on
+AHCI_RUNTIME_PM_ON_BAT=auto
+AHCI_RUNTIME_PM_TIMEOUT=15
+
+# --- Connectivity & Audio ---
+WIFI_PWR_ON_AC=off
+WIFI_PWR_ON_BAT=on
+WOL_DISABLE=Y
+
+SOUND_POWER_SAVE_ON_AC=1
+SOUND_POWER_SAVE_ON_BAT=1
+SOUND_POWER_SAVE_CONTROLLER=Y
+
+# --- PCIe & USB ---
+PCIE_ASPM_ON_AC=default
+PCIE_ASPM_ON_BAT=powersupersave
+PCIE_ASPM_ON_SAV=powersupersave
+
+RUNTIME_PM_ON_AC=on
+RUNTIME_PM_ON_BAT=auto
+
+USB_AUTOSUSPEND=1
+# Enable if you don't use BT controllers/mice often
+USB_EXCLUDE_BTUSB=0 
+
+# --- Startup/Shutdown ---
+# Disable Bluetooth on start to save juice; enable manually when needed.
+DEVICES_TO_DISABLE_ON_STARTUP="bluetooth"
