@@ -1,0 +1,255 @@
+--- TLP 1.10.0 --------------------------------------------
+
++++ Configured Settings:
+/etc/tlp.conf L0002: TLP_ENABLE="1"
+/etc/tlp.conf L0003: TLP_WARN_LEVEL="3"
+defaults.conf L0008: TLP_MSG_COLORS="91 93 1 92"
+/etc/tlp.conf L0004: TLP_AUTO_SWITCH="1"
+/etc/tlp.conf L0007: TLP_PROFILE_AC="BAL"
+/etc/tlp.conf L0008: TLP_PROFILE_BAT="SAV"
+/etc/tlp.conf L0046: DISK_IDLE_SECS_ON_AC="0"
+/etc/tlp.conf L0047: DISK_IDLE_SECS_ON_BAT="2"
+/etc/tlp.conf L0048: MAX_LOST_WORK_SECS_ON_AC="15"
+/etc/tlp.conf L0049: MAX_LOST_WORK_SECS_ON_BAT="60"
+/etc/tlp.conf L0021: CPU_ENERGY_PERF_POLICY_ON_AC="balance_power"
+/etc/tlp.conf L0022: CPU_ENERGY_PERF_POLICY_ON_BAT="power"
+/etc/tlp.conf L0023: CPU_ENERGY_PERF_POLICY_ON_SAV="power"
+/etc/tlp.conf L0031: PLATFORM_PROFILE_ON_AC="balanced"
+/etc/tlp.conf L0032: PLATFORM_PROFILE_ON_BAT="low-power"
+/etc/tlp.conf L0033: PLATFORM_PROFILE_ON_SAV="low-power"
+defaults.conf L0022: NMI_WATCHDOG="0"
+defaults.conf L0023: DISK_DEVICES="nvme0n1 sda"
+defaults.conf L0024: DISK_APM_LEVEL_ON_AC="254 254"
+defaults.conf L0025: DISK_APM_LEVEL_ON_BAT="128 128"
+defaults.conf L0026: DISK_APM_CLASS_DENYLIST="usb ieee1394"
+defaults.conf L0027: DISK_IOSCHED="keep keep"
+defaults.conf L0028: SATA_LINKPWR_ON_AC="med_power_with_dipm"
+defaults.conf L0029: SATA_LINKPWR_ON_BAT="med_power_with_dipm"
+/etc/tlp.conf L0052: AHCI_RUNTIME_PM_ON_AC="on"
+/etc/tlp.conf L0053: AHCI_RUNTIME_PM_ON_BAT="auto"
+/etc/tlp.conf L0054: AHCI_RUNTIME_PM_TIMEOUT="15"
+/etc/tlp.conf L0066: PCIE_ASPM_ON_AC="default"
+/etc/tlp.conf L0067: PCIE_ASPM_ON_BAT="powersupersave"
+/etc/tlp.conf L0068: PCIE_ASPM_ON_SAV="powersupersave"
+defaults.conf L0036: INTEL_GPU_POWER_PROFILE_ON_AC="base"
+defaults.conf L0037: INTEL_GPU_POWER_PROFILE_ON_BAT="power_saving"
+defaults.conf L0038: INTEL_GPU_POWER_PROFILE_ON_SAV="power_saving"
+/etc/tlp.conf L0036: RADEON_DPM_PERF_LEVEL_ON_AC="auto"
+/etc/tlp.conf L0037: RADEON_DPM_PERF_LEVEL_ON_BAT="low"
+/etc/tlp.conf L0038: RADEON_DPM_PERF_LEVEL_ON_SAV="low"
+/etc/tlp.conf L0041: AMDGPU_ABM_LEVEL_ON_AC="1"
+/etc/tlp.conf L0042: AMDGPU_ABM_LEVEL_ON_BAT="3"
+/etc/tlp.conf L0043: AMDGPU_ABM_LEVEL_ON_SAV="4"
+/etc/tlp.conf L0057: WIFI_PWR_ON_AC="off"
+/etc/tlp.conf L0058: WIFI_PWR_ON_BAT="on"
+/etc/tlp.conf L0059: WOL_DISABLE="Y"
+/etc/tlp.conf L0061: SOUND_POWER_SAVE_ON_AC="1"
+/etc/tlp.conf L0062: SOUND_POWER_SAVE_ON_BAT="1"
+/etc/tlp.conf L0063: SOUND_POWER_SAVE_CONTROLLER="Y"
+defaults.conf L0051: BAY_POWEROFF_ON_AC="0"
+defaults.conf L0052: BAY_POWEROFF_ON_BAT="0"
+defaults.conf L0053: BAY_DEVICE="sr0"
+/etc/tlp.conf L0070: RUNTIME_PM_ON_AC="on"
+/etc/tlp.conf L0071: RUNTIME_PM_ON_BAT="auto"
+defaults.conf L0056: RUNTIME_PM_DRIVER_DENYLIST="amdgpu mei_me nouveau nvidia xhci_hcd"
+/etc/tlp.conf L0073: USB_AUTOSUSPEND="1"
+defaults.conf L0058: USB_EXCLUDE_AUDIO="1"
+/etc/tlp.conf L0075: USB_EXCLUDE_BTUSB="0"
+defaults.conf L0060: USB_EXCLUDE_PHONE="0"
+defaults.conf L0061: USB_EXCLUDE_PRINTER="1"
+defaults.conf L0062: USB_EXCLUDE_WWAN="0"
+defaults.conf L0063: RESTORE_DEVICE_STATE_ON_STARTUP="0" #! Parameter is deprecated: feature will be removed with the next release
+defaults.conf L0064: RESTORE_THRESHOLDS_ON_BAT="1"
+defaults.conf L0065: NATACPI_ENABLE="1"
+defaults.conf L0066: TPSMAPI_ENABLE="1"
+/etc/tlp.conf L0012: CPU_DRIVER_OPMODE_ON_AC="active"
+/etc/tlp.conf L0013: CPU_DRIVER_OPMODE_ON_BAT="active"
+/etc/tlp.conf L0014: CPU_DRIVER_OPMODE_ON_SAV="active"
+/etc/tlp.conf L0016: CPU_SCALING_GOVERNOR_ON_AC="powersave"
+/etc/tlp.conf L0017: CPU_SCALING_GOVERNOR_ON_BAT="powersave"
+/etc/tlp.conf L0018: CPU_SCALING_GOVERNOR_ON_SAV="powersave"
+/etc/tlp.conf L0026: CPU_BOOST_ON_AC="0"
+/etc/tlp.conf L0027: CPU_BOOST_ON_BAT="0"
+/etc/tlp.conf L0028: CPU_BOOST_ON_SAV="0"
+/etc/tlp.conf L0079: DEVICES_TO_DISABLE_ON_STARTUP="bluetooth"
+
++++ System Info
+System         = LENOVO Legion Go 8APU1 83E1
+BIOS           = LENOVO N3CN32WW
+EC firmware    = 1.32
+OS release     = Arch Linux
+Kernel         = 6.18.24-1-lts #1 SMP PREEMPT_DYNAMIC Wed, 22 Apr 2026 16:24:16 +0000 x86_64
+/proc/cmdline  = initrd=\amd-ucode.img initrd=\initramfs-linux-lts.img root=/dev/nvme0n1p3 rw rootflags=subvol=@
+Init system    = systemd 260
+Boot mode      = UEFI
+Suspend mode   = [s2idle]
+
++++ TLP Status
+tlp            = enabled, last run: 02:24:07 PM, 117 sec(s) ago
+tlp-rdw        = not installed
+tlp-pd         = not installed
+TLP profile    = power-saver/SAV
+Power source   = battery
+
++++ Processor
+CPU model = AMD Ryzen Z1 Extreme
+
+/sys/devices/system/cpu/cpu0/cpufreq/scaling_driver    = amd-pstate-epp
+/sys/devices/system/cpu/cpu0/cpufreq/scaling_governor  = powersave
+/sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors = performance powersave
+/sys/devices/system/cpu/cpu0/cpufreq/scaling_min_freq  =  1100334 [kHz]
+/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq  =  3301000 [kHz]
+/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq  =   419175 [kHz]
+/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq  =  3301000 [kHz]
+/sys/devices/system/cpu/cpu0/cpufreq/amd_pstate_lowest_nonlinear_freq  =  1100334 [kHz]
+/sys/devices/system/cpu/cpu0/cpufreq/amd_pstate_max_freq               =  5134889 [kHz]
+/sys/devices/system/cpu/cpu0/cpufreq/energy_performance_preference = power [EPP]
+/sys/devices/system/cpu/cpu0/cpufreq/energy_performance_available_preferences = default performance balance_performance balance_power power 
+
+/sys/devices/system/cpu/cpu1..cpu15: omitted for clarity, use -v to show all
+
+/sys/devices/system/cpu/amd_pstate/status              = active
+/sys/devices/system/cpu/cpufreq/boost                  = 0
+/sys/module/workqueue/parameters/power_efficient       = Y
+/proc/sys/kernel/nmi_watchdog                          = 0
+
++++ Platform
+/sys/firmware/acpi/platform_profile                    = low-power
+/sys/firmware/acpi/platform_profile_choices            = low-power balanced performance
+
++++ Temperatures
+CPU temp (acpitz)      =   36 [°C]
+Fan speed              = (not available)
+
++++ File System
+/proc/sys/vm/laptop_mode               =     2
+/proc/sys/vm/dirty_writeback_centisecs =  6000
+/proc/sys/vm/dirty_expire_centisecs    =  6000
+/proc/sys/vm/dirty_ratio               =    20
+/proc/sys/vm/dirty_background_ratio    =    10
+
++++ Disks
+Devices = nvme0n1 sda
+
+/dev/nvme0n1:
+  Type       = NVMe
+  Disk ID    = nvme-WDC_PC_SN530_SDBPMPZ-256G-1001_************
+  Model      = WDC PC SN530 SDBPMPZ-256G-1001          
+  Firmware   = 21160001
+  Temp       = 43 °C
+  Scheduler  = [none] mq-deadline kyber bfq (multi queue)
+
+  Runtime PM:
+    /sys/block/nvme0n1/device/power/control = auto, autosuspend_delay_ms = (not available)
+
+/dev/sda: not present.
+
++++ AMD Radeon Graphics
+/sys/class/drm/card1/device/driver                                = amdgpu
+/sys/class/drm/card1/device/power_state                           = D0
+/sys/class/drm/card1/device/power_dpm_force_performance_level     = low
+/sys/class/drm/card1/card1-eDP-1/amdgpu/panel_power_savings       = 4
+
++++ Wireless
+bluetooth = off (software)
+nfc       = none (no device)
+wifi      = on
+wwan      = none (no device)
+
+hci0(btusb)                   : bluetooth, not connected
+wlan0(mt7921e)                : wifi, connected, power management = on
+
++++ Audio
+/sys/module/snd_hda_intel/parameters/power_save            = 1
+/sys/module/snd_hda_intel/parameters/power_save_controller = Y
+
++++ PCIe Active State Power Management
+/sys/module/pcie_aspm/parameters/policy = default performance powersave [powersupersave]
+
++++ PCIe Runtime Power Management
+Autosuspend       = enabled
+Enable devices    = (disabled)
+Disable devices   = (disabled)
+Device denylist   = (disabled)
+Driver denylist   = amdgpu mei_me nouveau nvidia xhci_hcd
+
+/sys/bus/pci/devices/0000:00:00.0/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:00.2/power/control = auto (0x080600, IOMMU, no driver)
+/sys/bus/pci/devices/0000:00:01.0/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:02.0/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:02.2/power/control = auto (0x060400, PCI bridge, pcieport)
+/sys/bus/pci/devices/0000:00:02.3/power/control = auto (0x060400, PCI bridge, pcieport)
+/sys/bus/pci/devices/0000:00:02.4/power/control = auto (0x060400, PCI bridge, pcieport)
+/sys/bus/pci/devices/0000:00:03.0/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:03.1/power/control = auto (0x060400, PCI bridge, pcieport)
+/sys/bus/pci/devices/0000:00:04.0/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:04.1/power/control = auto (0x060400, PCI bridge, pcieport)
+/sys/bus/pci/devices/0000:00:08.0/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:08.1/power/control = auto (0x060400, PCI bridge, pcieport)
+/sys/bus/pci/devices/0000:00:08.2/power/control = auto (0x060400, PCI bridge, pcieport)
+/sys/bus/pci/devices/0000:00:08.3/power/control = auto (0x060400, PCI bridge, pcieport)
+/sys/bus/pci/devices/0000:00:14.0/power/control = auto (0x0c0500, SMBus, piix4_smbus)
+/sys/bus/pci/devices/0000:00:14.3/power/control = auto (0x060100, ISA bridge, no driver)
+/sys/bus/pci/devices/0000:00:18.0/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:18.1/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:18.2/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:18.3/power/control = auto (0x060000, Host bridge, k10temp)
+/sys/bus/pci/devices/0000:00:18.4/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:18.5/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:18.6/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:00:18.7/power/control = auto (0x060000, Host bridge, no driver)
+/sys/bus/pci/devices/0000:01:00.0/power/control = auto (0x028000, Network controller, mt7921e)
+/sys/bus/pci/devices/0000:02:00.0/power/control = auto (0xff0000, Unassigned class [ff00], rtsx_pci)
+/sys/bus/pci/devices/0000:03:00.0/power/control = auto (0x010802, Non-Volatile memory controller, nvme)
+/sys/bus/pci/devices/0000:c2:00.0/power/control = on   (0x030000, VGA compatible controller, amdgpu)
+/sys/bus/pci/devices/0000:c2:00.1/power/control = auto (0x040300, Audio device, snd_hda_intel)
+/sys/bus/pci/devices/0000:c2:00.2/power/control = auto (0x108000, Encryption controller, ccp)
+/sys/bus/pci/devices/0000:c2:00.3/power/control = auto (0x0c0330, USB controller, xhci_hcd)
+/sys/bus/pci/devices/0000:c2:00.4/power/control = auto (0x0c0330, USB controller, xhci_hcd)
+/sys/bus/pci/devices/0000:c2:00.5/power/control = auto (0x048000, Multimedia controller, snd_pci_ps)
+/sys/bus/pci/devices/0000:c2:00.6/power/control = auto (0x040300, Audio device, snd_hda_intel)
+/sys/bus/pci/devices/0000:c2:00.7/power/control = auto (0x118000, Signal processing controller, pcie_mp2_amd)
+/sys/bus/pci/devices/0000:c3:00.0/power/control = auto (0x130000, Non-Essential Instrumentation [1300], no driver)
+/sys/bus/pci/devices/0000:c4:00.0/power/control = auto (0x130000, Non-Essential Instrumentation [1300], no driver)
+/sys/bus/pci/devices/0000:c4:00.3/power/control = auto (0x0c0330, USB controller, xhci_hcd)
+/sys/bus/pci/devices/0000:c4:00.4/power/control = auto (0x0c0330, USB controller, xhci_hcd)
+/sys/bus/pci/devices/0000:c4:00.5/power/control = auto (0x0c0340, USB controller, thunderbolt)
+/sys/bus/pci/devices/0000:c4:00.6/power/control = auto (0x0c0340, USB controller, thunderbolt)
+
++++ USB
+Autosuspend       = enabled
+Device allowlist  = (not configured)
+Device denylist   = (not configured)
+Exclude audio     = enabled
+Exclude bluetooth = disabled
+Exclude phones    = disabled
+Exclude printers  = enabled
+Exclude WWAN      = disabled
+
+Bus 001 Device 001 ID 1d6b:0002 control = auto, autosuspend_delay_ms =    0 -- Linux Foundation 2.0 root hub (hub)
+Bus 001 Device 002 ID 17ef:61ed control = on,   autosuspend_delay_ms = 2000 -- Lenovo Legion-Controller 1-61 (usbhid)
+Bus 001 Device 003 ID 0489:e0d9 control = auto, autosuspend_delay_ms = 2000 -- Foxconn / Hon Hai Wireless_Device (btusb)
+Bus 002 Device 001 ID 1d6b:0003 control = auto, autosuspend_delay_ms =    0 -- Linux Foundation 3.0 root hub (hub)
+Bus 003 Device 001 ID 1d6b:0002 control = auto, autosuspend_delay_ms =    0 -- Linux Foundation 2.0 root hub (hub)
+Bus 004 Device 001 ID 1d6b:0003 control = auto, autosuspend_delay_ms =    0 -- Linux Foundation 3.0 root hub (hub)
+Bus 005 Device 001 ID 1d6b:0002 control = auto, autosuspend_delay_ms =    0 -- Linux Foundation 2.0 root hub (hub)
+Bus 006 Device 001 ID 1d6b:0003 control = auto, autosuspend_delay_ms =    0 -- Linux Foundation 3.0 root hub (hub)
+Bus 007 Device 001 ID 1d6b:0002 control = auto, autosuspend_delay_ms =    0 -- Linux Foundation 2.0 root hub (hub)
+Bus 007 Device 002 ID 067b:2586 control = auto, autosuspend_delay_ms =    0 -- Prolific Technology, Inc. USB 2.0 Hub (hub)
+Bus 007 Device 003 ID 343c:0000 control = auto, autosuspend_delay_ms = 2000 -- xxxxxxxx USB Type-C Digital AV Adapter (no driver)
+Bus 007 Device 004 ID 05e3:0610 control = auto, autosuspend_delay_ms =    0 -- Genesys Logic, Inc. Hub (hub)
+Bus 007 Device 005 ID 1bcf:08a0 control = on,   autosuspend_delay_ms = 2000 -- Sunplus Innovation Technology Inc. Gaming mouse [Philips SPK9304] (usbhid)
+Bus 007 Device 006 ID 05ac:024f control = on,   autosuspend_delay_ms = 2000 -- Apple, Inc. Aluminium Keyboard (ANSI) (usbhid)
+Bus 008 Device 001 ID 1d6b:0003 control = auto, autosuspend_delay_ms =    0 -- Linux Foundation 3.0 root hub (hub)
+Bus 008 Device 002 ID 05e3:0625 control = auto, autosuspend_delay_ms =    0 -- Genesys Logic, Inc. USB3.2 Hub (hub)
+
++++ Battery Care
+Plugin: lenovo-legacy
+Supported features: none available
+Driver usage:
+* vendor (ideapad_laptop) = inactive (laptop not supported)
+
++++ Recommendations
+* Install ethtool to disable Wake-on-LAN
+* Install smartmontools for disk drive health info
+
