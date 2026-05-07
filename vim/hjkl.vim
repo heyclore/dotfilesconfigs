@@ -47,14 +47,14 @@ function! HJKLfilter(id, key)
 endfunction
 
 function! HJKLcallback(id, key)
-  noremap hl :call HJKLmenu()<CR>
+  "noremap hl :call HJKLmenu()<CR>
 endfunction
 
 "===============================================================================
 
 function! NavMenu()
   echo "NavMenu"
-  :unmap hl
+  ":unmap hl
   let s:nav_menu = popup_create("} j k {", {
         \ 'border': [],
         \ 'filter': 'NavMenuFilter',
@@ -69,21 +69,21 @@ function! NavMenuFilter(id, key)
   if a:key ==# " "
     call popup_close(a:id)
   elseif a:key == "h"
-    normal! }
-  elseif a:key == "j"
     if s:nav_num
       call NavJump(a:id, 1)
     else
       call JumpToScreenFraction(1)
     endif
+  elseif a:key == "j"
+    normal! }
   elseif a:key == "k"
+    normal! {
+  elseif a:key == "l"
     if s:nav_num
       call NavJump(a:id, 0)
     else
       call JumpToScreenFraction(0)
     endif
-  elseif a:key == "l"
-    normal! {
   elseif a:key =~# '^[0-9]$'
     let s:nav_num = s:nav_num * 10 + str2nr(a:key)
     if s:nav_num > 71
@@ -113,7 +113,7 @@ let s:has_prettier = executable('prettier')
 
 function! FileMenu()
   echo "FileMenu"
-  :unmap hl
+  ":unmap hl
   let s:file_menu = popup_create("q w q! gG", {
         \ 'border': [],
         \ 'filter': 'FileMenuFilter',
@@ -200,8 +200,9 @@ function! IncrementalSearchFilterInit(id, key)
       call popup_close(a:id)
       return 1
     endif
-    call popup_settext(a:id, "@_@")
+    call popup_settext(a:id, "@_@@")
     let s:is_result =! s:is_result
+    call popup_close(a:id)
     return 1
   elseif a:key ==# "\<BS>"
     let s:state_keys = s:state_keys[:-2]
@@ -274,7 +275,7 @@ function! CapsToggle()
         \ ? 'setxkbmap -option caps:escape'
         \ : 'setxkbmap -option')
   let s:isCaps = !s:isCaps
-  echo s:isCaps
+  echo "CAPSLOCK is " . s:isCaps
 endfunction
 
 "===============================================================================
@@ -401,7 +402,7 @@ endfunction
 
 "===============================================================================
 
-nnoremap hl :call HJKLmenu()<CR>
+"nnoremap hl :call HJKLmenu()<CR>
 nnoremap <Tab><Tab> :EditVifm<CR>
 nnoremap <Tab>q :call OpenAlternateBufferWithSmartSplit()<CR>
 nnoremap <Home> <C-w>w
@@ -414,11 +415,13 @@ nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
+nnoremap ; :
+nnoremap : ;
 "nnoremap <Esc><Esc> :
 "nnoremap W :call RandomBuffer()<CR>
 
 "inoremap jk <CR>
-inoremap hl <ESC>:call HJKLmenu()<CR>
+"inoremap hl <ESC>:call HJKLmenu()<CR>
 inoremap jj <ESC>
 inoremap <C-h> <C-x><C-o>
 inoremap <C-j> <C-n>
@@ -430,6 +433,11 @@ nnoremap <Esc>h :echo "ALT-h"<CR>
 nnoremap <Esc>j :echo "ALT-j"<CR>
 nnoremap <Esc>k :echo "ALT-k"<CR>
 nnoremap <Esc>l :echo "ALT-l"<CR>
+let mapleader = " "
+nnoremap <leader>h :call IncrementalSearch()<CR>
+nnoremap <leader>j :call NavMenu()<CR>
+nnoremap <leader>k :call FileMenu()<CR>
+nnoremap <leader>l :call CapsToggle()<CR>
 "inoremap <F2> <Cmd>w<CR>
 "inoremap <F3> <ESC>:call ConsolePrint()<CR>
 
