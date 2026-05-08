@@ -21,7 +21,7 @@ endfunction
 function! NavMenu()
   echo "NavMenu"
   :unmap <leader>j
-  let s:nav_menu = popup_create("/ jJ kK ?", {
+  let s:nav_menu = popup_create("/_?", {
         \ 'border': [],
         \ 'filter': 'NavMenuFilter',
         \ 'callback': 'Navcallback',
@@ -36,21 +36,21 @@ function! NavMenuFilter(id, key)
     call popup_close(a:id)
     nnoremap <leader>j :call NavMenu()<CR>
   elseif a:key ==# "J"
+    call JumpToScreenFraction(1)
+  elseif a:key ==# "j"
     if s:nav_num
       call NavJump(a:id, 1)
     else
-      call JumpToScreenFraction(1)
+      normal! }
     endif
-  elseif a:key ==# "j"
-    normal! }
   elseif a:key ==# "k"
-    normal! {
-  elseif a:key ==# "K"
     if s:nav_num
       call NavJump(a:id, 0)
     else
-      call JumpToScreenFraction(0)
+      normal! {
     endif
+  elseif a:key ==# "K"
+    call JumpToScreenFraction(0)
   elseif a:key =~# '^[0-9]$'
     let s:nav_num = s:nav_num * 10 + str2nr(a:key)
     if s:nav_num > 71
@@ -77,6 +77,18 @@ function! NavMenuFilter(id, key)
           \ 'filter': 'IncrementalSearchFilterInit',
           \ 'callback': 'Navcallback',
           \ })
+  elseif a:key ==# "v"
+    normal! V
+  elseif a:key ==# "d"
+    normal! d
+  elseif a:key ==# "o"
+    normal! o
+  elseif a:key ==# "O"
+    normal! O
+  elseif a:key ==# "u"
+    normal! u
+  elseif a:key ==# "g"
+    normal! =G
   endif
   return 1
 endfunction
@@ -361,6 +373,11 @@ endfunction
 "===============================================================================
 
 "nnoremap hl :call HJKLmenu()<CR>
+let mapleader = " "
+nnoremap <leader>h :call FileMenu()<CR>
+nnoremap <leader>j :call NavMenu()<CR>
+nnoremap <leader>k :echo 'kkk'<CR>
+nnoremap <leader>l :echo 'lll'<CR>
 nnoremap <Tab><Tab> :EditVifm<CR>
 nnoremap <Tab>q :call OpenAlternateBufferWithSmartSplit()<CR>
 nnoremap <Home> <C-w>w
@@ -391,11 +408,6 @@ nnoremap <Esc>h :echo "ALT-h"<CR>
 nnoremap <Esc>j :echo "ALT-j"<CR>
 nnoremap <Esc>k :echo "ALT-k"<CR>
 nnoremap <Esc>l :echo "ALT-l"<CR>
-let mapleader = " "
-nnoremap <leader>h :call IncrementalSearch()<CR>
-nnoremap <leader>j :call NavMenu()<CR>
-nnoremap <leader>k :call FileMenu()<CR>
-nnoremap <leader>l :call CapsToggle()<CR>
 "inoremap <F2> <Cmd>w<CR>
 "inoremap <F3> <ESC>:call ConsolePrint()<CR>
 
