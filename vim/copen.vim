@@ -476,3 +476,77 @@ endfunction
 
 command! -nargs=? C call VimgrepSearch(<q-args>)
 
+"===============================================================================
+
+function! HJKLmenu()
+  echo "HJKLmenu"
+  ":unmap hl
+  let s:hjkl_menu = popup_create("/ jk % @_@", {
+        \ 'border': [],
+        \ 'filter': 'HJKLfilter',
+        \ })
+endfunction
+
+function! HJKLfilter(id, key)
+  if a:key ==# " "
+    call popup_close(a:id)
+  elseif a:key == "h"
+    call popup_close(a:id)
+    call IncrementalSearch()
+  elseif a:key == "j"
+    call popup_close(a:id)
+    call NavMenu()
+  elseif a:key == "k"
+    call popup_close(a:id)
+    call FileMenu()
+  elseif a:key == "l"
+    call CapsToggle()
+  endif
+  return 1
+endfunction
+
+function! HJKLcallback(id, key)
+  "noremap hl :call HJKLmenu()<CR>
+endfunction
+
+"===============================================================================
+
+function! IncrementalSearch()
+  echo "IncrementalSearch"
+  normal! 0
+  let s:fuzzy_search = popup_create("$ j? k? @_@", {
+        \ 'border': [],
+        \ 'filter': 'IncrementalSearchFilter',
+        \ })
+endfunction
+
+let s:state_keys = ""
+let s:search_direction = ""
+let s:direction_reverse = ""
+let s:is_result = 0
+
+function! IncrementalSearchFilter(id, key)
+  if s:search_direction == '/' || s:search_direction == '?'
+    call IncrementalSearchFilterInit(a:id, a:key)
+    return 1
+  endif
+  if a:key ==# " " || a:key ==# "\<CR>"
+    call popup_close(a:id)
+  elseif a:key == "h"
+    let s:is_result =! s:is_result
+    let s:search_direction = '?'
+    call IncrementalSearchFilterInit(a:id, a:key)
+  elseif a:key == "j"
+    let s:search_direction = '/'
+    let s:direction_reverse = '?'
+    call popup_settext(a:id, s:search_direction)
+  elseif a:key == "k"
+    let s:search_direction = '?'
+    let s:direction_reverse = '/'
+    call popup_settext(a:id, s:search_direction)
+  elseif a:key == "l"
+    echo 6
+  endif
+  return 1
+endfunction
+

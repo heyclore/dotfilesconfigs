@@ -18,47 +18,13 @@ endfunction
 
 "===============================================================================
 
-function! HJKLmenu()
-  echo "HJKLmenu"
-  :unmap hl
-  let s:hjkl_menu = popup_create("/ jk % @_@", {
-        \ 'border': [],
-        \ 'filter': 'HJKLfilter',
-        \ 'callback': 'HJKLcallback',
-        \ })
-endfunction
-
-function! HJKLfilter(id, key)
-  if a:key ==# " "
-    call popup_close(a:id)
-  elseif a:key == "h"
-    call popup_close(a:id)
-    call IncrementalSearch()
-  elseif a:key == "j"
-    call popup_close(a:id)
-    call NavMenu()
-  elseif a:key == "k"
-    call popup_close(a:id)
-    call FileMenu()
-  elseif a:key == "l"
-    call CapsToggle()
-  endif
-  return 1
-endfunction
-
-function! HJKLcallback(id, key)
-  "noremap hl :call HJKLmenu()<CR>
-endfunction
-
-"===============================================================================
-
 function! NavMenu()
   echo "NavMenu"
-  ":unmap hl
-  let s:nav_menu = popup_create("} j k {", {
+  :unmap <leader>j
+  let s:nav_menu = popup_create("/ jJ kK ?", {
         \ 'border': [],
         \ 'filter': 'NavMenuFilter',
-        \ 'callback': 'HJKLcallback'
+        \ 'callback': 'Navcallback',
         \ })
 endfunction
 
@@ -68,17 +34,18 @@ function! NavMenuFilter(id, key)
   endif
   if a:key ==# " "
     call popup_close(a:id)
-  elseif a:key == "h"
+    nnoremap <leader>j :call NavMenu()<CR>
+  elseif a:key ==# "J"
     if s:nav_num
       call NavJump(a:id, 1)
     else
       call JumpToScreenFraction(1)
     endif
-  elseif a:key == "j"
+  elseif a:key ==# "j"
     normal! }
-  elseif a:key == "k"
+  elseif a:key ==# "k"
     normal! {
-  elseif a:key == "l"
+  elseif a:key ==# "K"
     if s:nav_num
       call NavJump(a:id, 0)
     else
@@ -90,8 +57,32 @@ function! NavMenuFilter(id, key)
       let s:nav_num = str2nr(a:key)
     endif
     echo s:nav_num
+  elseif a:key ==# "h"
+    let s:search_direction = '/'
+    let s:direction_reverse = '?'
+    call popup_close(a:id)
+    :unmap <leader>j
+    let s:fuzzy_search = popup_create("/", {
+          \ 'border': [],
+          \ 'filter': 'IncrementalSearchFilterInit',
+          \ 'callback': 'Navcallback',
+          \ })
+  elseif a:key ==# "l"
+    let s:search_direction = '?'
+    let s:direction_reverse = '/'
+    call popup_close(a:id)
+    :unmap <leader>j
+    let s:fuzzy_search = popup_create("?", {
+          \ 'border': [],
+          \ 'filter': 'IncrementalSearchFilterInit',
+          \ 'callback': 'Navcallback',
+          \ })
   endif
   return 1
+endfunction
+
+function! Navcallback(id, key)
+  nnoremap <leader>j :call NavMenu()<CR>
 endfunction
 
 function! NavJump(id, nav)
@@ -117,7 +108,6 @@ function! FileMenu()
   let s:file_menu = popup_create("q w q! gG", {
         \ 'border': [],
         \ 'filter': 'FileMenuFilter',
-        \ 'callback': 'HJKLcallback'
         \ })
 endfunction
 
@@ -148,51 +138,17 @@ endfunction
 
 "===============================================================================
 
-function! IncrementalSearch()
-  echo "IncrementalSearch"
-  normal! 0
-  let s:fuzzy_search = popup_create("$ j? k? @_@", {
-        \ 'border': [],
-        \ 'filter': 'IncrementalSearchFilter',
-        \ })
-endfunction
-
 let s:state_keys = ""
 let s:search_direction = ""
 let s:direction_reverse = ""
 let s:is_result = 0
-
-function! IncrementalSearchFilter(id, key)
-  if s:search_direction == '/' || s:search_direction == '?'
-    call IncrementalSearchFilterInit(a:id, a:key)
-    return 1
-  endif
-  if a:key ==# " "
-    call popup_close(a:id)
-  elseif a:key == "h"
-    let s:is_result =! s:is_result
-    let s:search_direction = '?'
-    call IncrementalSearchFilterInit(a:id, a:key)
-  elseif a:key == "j"
-    let s:search_direction = '/'
-    let s:direction_reverse = '?'
-    call popup_settext(a:id, s:search_direction)
-  elseif a:key == "k"
-    let s:search_direction = '?'
-    let s:direction_reverse = '/'
-    call popup_settext(a:id, s:search_direction)
-  elseif a:key == "l"
-    echo 6
-  endif
-  return 1
-endfunction
 
 function! IncrementalSearchFilterInit(id, key)
   if s:is_result
     call IncrementalSearchFilterResult(a:id, a:key)
     return 1
   endif
-  if a:key ==# " "
+  if a:key ==# " " || a:key ==# "\<CR>"
     if s:state_keys == ""
       let s:state_keys = ""
       let s:search_direction = ""
@@ -200,9 +156,9 @@ function! IncrementalSearchFilterInit(id, key)
       call popup_close(a:id)
       return 1
     endif
-    call popup_settext(a:id, "@_@@")
+    call popup_settext(a:id, "@_@")
     let s:is_result =! s:is_result
-    call popup_close(a:id)
+    "call popup_close(a:id)
     return 1
   elseif a:key ==# "\<BS>"
     let s:state_keys = s:state_keys[:-2]
@@ -211,8 +167,8 @@ function! IncrementalSearchFilterInit(id, key)
     endif
     silent! execute 'normal!' . s:direction_reverse . "\<CR>"
     echo s:state_keys
-  elseif a:key ==# "\<CR>"
-    return 1
+  "elseif a:key ==# "\<CR>"
+  "  return 1
   elseif a:key =~# '^[A-Za-z0-9]$'
     let s:state_keys .= a:key
     call setreg("/", s:state_keys)
@@ -235,6 +191,8 @@ function! IncrementalSearchFilterResult(id, key)
     normal! n
   elseif a:key == "k"
     normal! N
+  elseif a:key == "z"
+    normal! zz
   endif
   return1
 endfunction
