@@ -19,11 +19,6 @@ elif [ "$HOSTNAME" = "redsea" ]; then
 
 fi
 
-if pactl list short modules | grep -q "module-device-restore"; then
-    pactl unload-module module-device-restore
-fi
-pactl load-module module-device-restore restore_volume=false
-
 if ! pactl list short modules | grep -q "module-alsa-source"; then
     pactl load-module module-alsa-source device=hw:1,0
 fi
