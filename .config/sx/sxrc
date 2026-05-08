@@ -9,13 +9,22 @@ elif [ "$HOSTNAME" = "redsea" ]; then
     xrandr --output eDP-1 --mode 1600x2560 --rate 59 --rotate left --dpi 192
     unclutter -idle 1 --start-hidden &
     if false; then
-    export XCURSOR_SIZE=64
-    export GDK_DPI_SCALE=2
-    xrandr --output eDP-1 --mode 1600x2560 --rate 59 --scale 0.5x0.5  --rotate left
+        export XCURSOR_SIZE=64
+        export GDK_DPI_SCALE=2
+        xrandr --output eDP-1 --mode 1600x2560 --rate 59 --scale 0.5x0.5  --rotate left
+        if ! pactl list short modules | grep -q module-alsa-source; then
+            pactl load-module module-alsa-source device=hw:1,0
+        fi
     fi
+
 fi
 
-if ! pactl list short modules | grep -q module-alsa-source; then
+if pactl list short modules | grep -q "module-device-restore"; then
+    pactl unload-module module-device-restore
+fi
+pactl load-module module-device-restore restore_volume=false
+
+if ! pactl list short modules | grep -q "module-alsa-source"; then
     pactl load-module module-alsa-source device=hw:1,0
 fi
 
