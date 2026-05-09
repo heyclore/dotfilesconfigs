@@ -28,67 +28,85 @@ function! NavMenu()
         \ })
 endfunction
 
+let s:actions = {
+      \ 'v': {-> execute('normal! V')},
+      \ 'd': {-> execute('normal! dd')},
+      \ 'o': {-> execute('normal! o')},
+      \ 'z': {-> execute('normal! zz')},
+      \ 'O': {-> execute('normal! O')},
+      \ 'u': {-> execute('normal! u')},
+      \ 'g': {-> execute('normal! =G')},
+      \ }
+
 function! NavMenuFilter(id, key)
   if !exists('s:nav_num')
     let s:nav_num = 0
   endif
-  if a:key ==# " "
+  if has_key(s:actions, a:key)
+    call s:actions[a:key]()
+    return 1
+  endif
+  if a:key ==# ' '
     call popup_close(a:id)
     nnoremap <leader>j :call NavMenu()<CR>
-  elseif a:key ==# "J"
+    return 1
+  endif
+  if a:key ==# 'J'
     call JumpToScreenFraction(1)
-  elseif a:key ==# "j"
+    return 1
+  elseif a:key ==# 'K'
+    call JumpToScreenFraction(0)
+    return 1
+  endif
+  if a:key ==# 'j'
     if s:nav_num
       call NavJump(a:id, 1)
     else
       normal! }
     endif
-  elseif a:key ==# "k"
+    return 1
+  elseif a:key ==# 'k'
     if s:nav_num
       call NavJump(a:id, 0)
     else
       normal! {
     endif
-  elseif a:key ==# "K"
-    call JumpToScreenFraction(0)
-  elseif a:key =~# '^[0-9]$'
+    return 1
+  endif
+  if a:key =~# '^[0-9]$'
     let s:nav_num = s:nav_num * 10 + str2nr(a:key)
     if s:nav_num > 71
       let s:nav_num = str2nr(a:key)
     endif
     echo s:nav_num
-  elseif a:key ==# "h"
+    return 1
+  endif
+  if a:key ==# 'h'
     let s:search_direction = '/'
     let s:direction_reverse = '?'
     call popup_close(a:id)
-    :unmap <leader>j
+    unmap <leader>j
     let s:fuzzy_search = popup_create("/", {
           \ 'border': [],
           \ 'filter': 'IncrementalSearchFilterInit',
           \ 'callback': 'Navcallback',
           \ })
-  elseif a:key ==# "l"
+    return 1
+  endif
+  if a:key ==# 'l'
     let s:search_direction = '?'
     let s:direction_reverse = '/'
     call popup_close(a:id)
-    :unmap <leader>j
+    unmap <leader>j
     let s:fuzzy_search = popup_create("?", {
           \ 'border': [],
           \ 'filter': 'IncrementalSearchFilterInit',
           \ 'callback': 'Navcallback',
           \ })
-  elseif a:key ==# "v"
-    normal! V
-  elseif a:key ==# "d"
-    normal! d
-  elseif a:key ==# "o"
-    normal! o
-  elseif a:key ==# "O"
-    normal! O
-  elseif a:key ==# "u"
-    normal! u
-  elseif a:key ==# "g"
-    normal! =G
+    return 1
+  endif
+  if a:key ==# 'w'
+    write
   endif
   return 1
 endfunction
@@ -397,7 +415,8 @@ nnoremap : ;
 
 "inoremap jk <CR>
 "inoremap hl <ESC>:call HJKLmenu()<CR>
-inoremap jj <ESC>
+"inoremap jj <ESC>
+inoremap jj <ESC>:call NavMenu()<CR>
 inoremap <C-h> <C-x><C-o>
 inoremap <C-j> <C-n>
 inoremap <C-k> <C-p>
