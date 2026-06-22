@@ -13,6 +13,7 @@ PS1='[\u@\h \[\e[38;5;246m\]\W\[\e[38;5;238m\]$(parse_git_branch)\[\e[0m\]] \$_$
 alias neofetch='neofetch --ascii_colors 8 --colors 7 8 7 8 8 7'
 alias gitt='git add . && git commit -mm'
 alias ll='export JANCOK=1'
+alias man='man -C $HOME/apps/pac/extra/etc/man_db.conf'
 
 export EDITOR="vim"
 export GEMINI_MODEL="gemini-2.5-flash-lite"

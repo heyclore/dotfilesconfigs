@@ -72,3 +72,24 @@ done
 # --- Store packages locally ---
 #cp -v "$target_tmp_dir/pkg/"*.pkg.tar.* "$target_pkg_dir/"
 
+# --- Flatten shared libraries into usr/lib ---
+libdir="$target_tmp_dir/${bundle_name}/usr/lib"
+
+find "$libdir" -mindepth 2 \
+  \( -type f -o -type l \) \
+  \( -name '*.so' -o -name '*.so.*' \) \
+  -print0 |
+while IFS= read -r -d '' src; do
+  dst="$libdir/$(basename "$src")"
+
+  if [[ -e "$dst" ]]; then
+    echo "Skipping existing: $(basename "$src")"
+    continue
+  fi
+
+  echo "Moving: $src -> $dst"
+  mv "$src" "$dst"
+done
+
+# Remove empty directories left behind
+find "$libdir" -mindepth 1 -type d -empty -delete
