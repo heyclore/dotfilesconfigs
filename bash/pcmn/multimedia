@@ -5,8 +5,6 @@ multimedia
 0.1
 
 %PACKAGES%
-pcmanfm
 lxappearance
 mpv
 ffmpeg
-gimp
