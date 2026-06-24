@@ -9,7 +9,7 @@ fi
 bundle_file="$1"
 
 target_tmp_dir="/tmp/tmp"
-#target_pkg_dir="$HOME/apps/pac"
+# target_pkg_dir="$HOME/apps/pac"
 target_pkg_dir="/tmp/foo"
 
 declare -a packages
@@ -49,7 +49,7 @@ cd ~
 sudo rm -rf "$target_tmp_dir/"
 mkdir -p "$target_tmp_dir/${bundle_name}/usr/lib/extension-release.d"
 echo "ID=arch" > "$target_tmp_dir/${bundle_name}/usr/lib/extension-release.d/extension-release.${bundle_name}"
-#  mkdir -p "$target_pkg_dir"
+# mkdir -p "$target_pkg_dir"
 
 # --- Download packages ---
 if ! sudo pacman \
@@ -62,17 +62,17 @@ then
   exit 1
 fi
 
+# --- Extract packages ---
 for f in "$target_tmp_dir"/*.pkg.tar.zst; do
-  [[ -e "$f" ]] || continue  # skip if no matches
+  [[ -e "$f" ]] || continue
   echo "Extracting: $f"
   tar -xvf "$f" -C "$target_tmp_dir/${bundle_name}"
 done
 
+# --- Store packages locally (optional) ---
+# cp -v "$target_tmp_dir/pkg/"*.pkg.tar.* "$target_pkg_dir/"
 
-# --- Store packages locally ---
-#cp -v "$target_tmp_dir/pkg/"*.pkg.tar.* "$target_pkg_dir/"
-
-# --- Flatten shared libraries into usr/lib ---
+# --- Symlink shared libraries into usr/lib ---
 libdir="$target_tmp_dir/${bundle_name}/usr/lib"
 
 find "$libdir" -mindepth 2 \
@@ -80,16 +80,16 @@ find "$libdir" -mindepth 2 \
   \( -name '*.so' -o -name '*.so.*' \) \
   -print0 |
 while IFS= read -r -d '' src; do
-  dst="$libdir/$(basename "$src")"
+  name="$(basename "$src")"
+  dst="$libdir/$name"
 
-  if [[ -e "$dst" ]]; then
-    echo "Skipping existing: $(basename "$src")"
+  if [[ -e "$dst" || -L "$dst" ]]; then
+    echo "Skipping existing: $name"
     continue
   fi
 
-  echo "Moving: $src -> $dst"
-  mv "$src" "$dst"
-done
+  rel="$(realpath --relative-to="$libdir" "$src")"
 
-# Remove empty directories left behind
-find "$libdir" -mindepth 1 -type d -empty -delete
+  echo "Symlinking: $dst -> $rel"
+  ln -s "$rel" "$dst"
+done
