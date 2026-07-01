@@ -6,20 +6,18 @@ export EDITOR="vim"
 export GEMINI_MODEL="gemini-2.5-flash-lite"
 export KATALON_MCP_ENABLED=false
 export NVM_DIR="$HOME/.nvm"
-
-export JAVA_HOME="/usr/lib/jvm/java-21-openjdk"
+export LD_LIBRARY_PATH="$HOME/apps/opt/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
 
 path_prepend "$HOME/apps/opt/bin"
-path_prepend "$JAVA_HOME/bin"
 
-export LD_LIBRARY_PATH="$HOME/apps/opt/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+if command -v java >/dev/null 2>&1; then
+  JAVA_BIN="$(readlink -f "$(command -v java)")"
+  export JAVA_HOME="${JAVA_BIN%/bin/java}"
+  path_prepend "$JAVA_HOME/bin"
+fi
 
 if [[ -f "$HOME/.nix-profile/etc/profile.d/nix.sh" ]]; then
   . "$HOME/.nix-profile/etc/profile.d/nix.sh"
-fi
-
-if ! systemctl --quiet is-active iwd.service; then
-  sudo /usr/bin/systemctl start iwd.service
 fi
 
 # Exit if not interactive
