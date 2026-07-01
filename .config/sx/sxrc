@@ -23,4 +23,8 @@ if ! pactl list short modules | grep -q "module-alsa-source"; then
     pactl load-module module-alsa-source device=hw:1,0
 fi
 
+if ! systemctl --quiet is-active iwd.service; then
+  sudo systemctl start iwd.service
+fi
+
 exec dwm
