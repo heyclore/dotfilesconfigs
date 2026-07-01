@@ -11,32 +11,32 @@ foo_packages=(
   make
 )
 
-bar_packages=(
-  #btop
-  #less
-  #nvtop
-  #tmux
-  #tree
-  #unclutter
-  #unzip
-  #wget
-  #which
-  #xclip
-  #xdg-utils
-  #xorg-xev
-  #xorg-xhost
-  #xorg-xkill
-  #xorg-xprop
-  #xorg-xsetroot
-  #vifm
+extra_packages=(
+  btop
+  less
+  nvtop
+  tmux
+  tree
+  unclutter
+  unzip
+  wget
+  which
+  xclip
+  xdg-utils
+  xorg-xev
+  xorg-xhost
+  xorg-xkill
+  xorg-xprop
+  xorg-xsetroot
+  vifm
   chafa
   man
-  #alsa-utils
-  #lxappearance
-  #patchelf
-  #pkgfile
-  #mpv
-  #pacman-contrib
+  alsa-utils
+  lxappearance
+  patchelf
+  pkgfile
+  mpv
+  pacman-contrib
 )
 
 # ----------------------------
@@ -65,17 +65,17 @@ subtract_arrays() {
 # ----------------------------
 # Choose bundle
 # ----------------------------
-read -rp "Choose bundle (foo/bar): " bundle_name
+read -rp "Choose bundle (foo/extra): " bundle_name
 declare -a packages=()
 
 case "$bundle_name" in
   foo)
     mapfile -t packages < <(collect_packages "${foo_packages[@]}")
     ;;
-  bar)
+  extra)
     mapfile -t foo_resolved < <(collect_packages "${foo_packages[@]}")
-    mapfile -t bar_resolved < <(collect_packages "${bar_packages[@]}")
-    mapfile -t packages < <(subtract_arrays foo_resolved bar_resolved)
+    mapfile -t extra_resolved < <(collect_packages "${extra_packages[@]}")
+    mapfile -t packages < <(subtract_arrays foo_resolved extra_resolved)
     ;;
   *)
     echo "Invalid bundle"
