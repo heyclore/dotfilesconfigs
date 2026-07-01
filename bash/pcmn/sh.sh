@@ -12,31 +12,31 @@ foo_packages=(
 )
 
 bar_packages=(
-  btop
-  less
-  nvtop
-  tmux
-  tree
-  unclutter
-  unzip
-  wget
-  which
-  xclip
-  xdg-utils
-  xorg-xev
-  xorg-xhost
-  xorg-xkill
-  xorg-xprop
-  xorg-xsetroot
-  vifm
+  #btop
+  #less
+  #nvtop
+  #tmux
+  #tree
+  #unclutter
+  #unzip
+  #wget
+  #which
+  #xclip
+  #xdg-utils
+  #xorg-xev
+  #xorg-xhost
+  #xorg-xkill
+  #xorg-xprop
+  #xorg-xsetroot
+  #vifm
   chafa
   man
-  alsa-utils
-  lxappearance
-  patchelf
-  pkgfile
+  #alsa-utils
+  #lxappearance
+  #patchelf
+  #pkgfile
   #mpv
-  pacman-contrib
+  #pacman-contrib
 )
 
 # ----------------------------

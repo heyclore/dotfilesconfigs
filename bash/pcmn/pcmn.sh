@@ -1,95 +1,58 @@
 #!/usr/bin/env bash
-set -euo pipefail
 
-if [[ $# -ne 1 ]]; then
-  echo "Usage: $0 <bundle-file>"
-  exit 1
-fi
+BIN_DIR="./bin"
+LIB_DIR="./lib"
 
-bundle_file="$1"
+[[ -d "$BIN_DIR" && -d "$LIB_DIR" ]] || exit 1
 
-target_tmp_dir="/tmp/tmp"
-# target_pkg_dir="$HOME/apps/pac"
-target_pkg_dir="/tmp/foo"
+targets=(
+    $(find "$BIN_DIR" -type f -executable)
+    $(find "$LIB_DIR" -maxdepth 1 -type f -name "*.so*")
+)
 
-declare -a packages
-current=""
-bundle_name=""
+for exe in "${targets[@]}"; do
+    missing=$(ldd "$exe" 2>/dev/null | awk '/not found/ {print $1}')
+    [[ -z "$missing" ]] && continue
 
-# --- Parse bundle file ---
-while IFS= read -r line || [[ -n $line ]]; do
-  if [[ $line == %*% ]]; then
-    current="${line:1:-1}"
-    continue
-  fi
+    rpaths=()
 
-  if [[ $current == "PACKAGES" && -n $line ]]; then
-    packages+=("$line")
-  fi
+    for lib in $missing; do
+        replacement=""
+        found=""
 
-  if [[ $current == "NAME" ]]; then
-    if [[ -z "$bundle_name" ]]; then
-      bundle_name="$line"
+        # exact
+        found=$(find "$LIB_DIR" -type f -name "$lib" | head -n1)
+
+        if [[ -n "$found" ]]; then
+            replacement=$(basename "$found")
+        else
+            # sanitized
+            sanitized=$(echo "$lib" | sed -E 's/(\.so)(\..*)$/\1/')
+            found=$(find "$LIB_DIR" -type f -name "$sanitized" | head -n1)
+
+            if [[ -n "$found" ]]; then
+                replacement=$(basename "$found")
+                patchelf --replace-needed "$lib" "$replacement" "$exe"
+            else
+                # prefix match
+                found=$(find "$LIB_DIR" -type f -name "${lib}*" | head -n1)
+
+                if [[ -n "$found" ]]; then
+                    replacement=$(basename "$found")
+                    patchelf --replace-needed "$lib" "$replacement" "$exe"
+                fi
+            fi
+        fi
+
+        if [[ -n "$found" ]]; then
+            dir=$(dirname "$found")
+            rel=$(realpath --relative-to="$(dirname "$exe")" "$dir")
+            rpaths+=("\$ORIGIN/$rel")
+        fi
+    done
+
+    if [[ ${#rpaths[@]} -gt 0 ]]; then
+        rpath=$(printf "%s:" "${rpaths[@]}" | sed 's/:$//')
+        patchelf --set-rpath "$rpath" "$exe"
     fi
-  fi
-done < "$bundle_file"
-
-if ((${#packages[@]} == 0)); then
-  echo "No packages found in $bundle_file"
-  exit 1
-fi
-
-echo "Bundle packages:"
-echo "${packages[@]}"
-
-# Ensure we're not in the directory we might delete
-cd ~
-
-# --- Prepare directories ---
-sudo rm -rf "$target_tmp_dir/"
-mkdir -p "$target_tmp_dir/${bundle_name}/usr/lib/extension-release.d"
-echo "ID=arch" > "$target_tmp_dir/${bundle_name}/usr/lib/extension-release.d/extension-release.${bundle_name}"
-# mkdir -p "$target_pkg_dir"
-
-# --- Download packages ---
-if ! sudo pacman \
-  --downloadonly \
-  --cachedir="$target_tmp_dir/" \
-  -Sw \
-  "${packages[@]}"
-then
-  echo "Failed to download one or more packages"
-  exit 1
-fi
-
-# --- Extract packages ---
-for f in "$target_tmp_dir"/*.pkg.tar.zst; do
-  [[ -e "$f" ]] || continue
-  echo "Extracting: $f"
-  tar -xvf "$f" -C "$target_tmp_dir/${bundle_name}"
-done
-
-# --- Store packages locally (optional) ---
-# cp -v "$target_tmp_dir/pkg/"*.pkg.tar.* "$target_pkg_dir/"
-
-# --- Symlink shared libraries into usr/lib ---
-libdir="$target_tmp_dir/${bundle_name}/usr/lib"
-
-find "$libdir" -mindepth 2 \
-  \( -type f -o -type l \) \
-  \( -name '*.so' -o -name '*.so.*' \) \
-  -print0 |
-while IFS= read -r -d '' src; do
-  name="$(basename "$src")"
-  dst="$libdir/$name"
-
-  if [[ -e "$dst" || -L "$dst" ]]; then
-    echo "Skipping existing: $name"
-    continue
-  fi
-
-  rel="$(realpath --relative-to="$libdir" "$src")"
-
-  echo "Symlinking: $dst -> $rel"
-  ln -s "$rel" "$dst"
 done
