@@ -5,9 +5,15 @@ if [ "$HOSTNAME" = "overlord" ]; then
 
 
 elif [ "$HOSTNAME" = "redsea" ]; then
+    if [[ $(< /sys/class/power_supply/ACAD/online) -ne 1 ]]; then
+        echo "AC adapter not connected. Staying in TTY."
+        exit 0
+    fi
+
     export GDK_SCALE=2
     xrandr --output eDP-1 --mode 1600x2560 --rate 59 --rotate left --dpi 192
     unclutter -idle 1 --start-hidden &
+
     if false; then
         export XCURSOR_SIZE=64
         export GDK_DPI_SCALE=2
@@ -16,7 +22,6 @@ elif [ "$HOSTNAME" = "redsea" ]; then
             pactl load-module module-alsa-source device=hw:1,0
         fi
     fi
-
 fi
 
 if ! pactl list short modules | grep -q "module-alsa-source"; then
