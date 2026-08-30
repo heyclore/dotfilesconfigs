@@ -11,11 +11,11 @@ elif [ "$HOSTNAME" = "redsea" ]; then
     fi
 
     export GDK_SCALE=2
+    export XCURSOR_SIZE=32
     xrandr --output eDP-1 --mode 1600x2560 --rate 59 --rotate left --dpi 192
     unclutter -idle 1 --start-hidden &
 
     if false; then
-        export XCURSOR_SIZE=64
         export GDK_DPI_SCALE=2
         xrandr --output eDP-1 --mode 1600x2560 --rate 59 --scale 0.5x0.5  --rotate left
         if ! pactl list short modules | grep -q module-alsa-source; then
